@@ -39,6 +39,7 @@ public class GURLConnection {
                 try {
                     URL url = new URL(mUrl);
 
+                    // TODO: Refactor to compare the instance of one URLConnection object.
                     if (mTimeOut > -1) {
                         if (checkConnectionType(mUrl) == ConnectionType.HTTP) {
                             HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
