@@ -6,46 +6,55 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by Gomguk on 16. 7. 8..
  */
-public class GURLConnection {
-    public enum ConnectionType {
+public class GRESTURLConnection {
+    public enum SchemeType {
         HTTP, HTTPS
     }
 
-    private AsyncTask<String, Object, Object> mAsyncTask = null;
-    private String mUrl = null;
-    private int mTimeOut = -1;
-
-    public static void execute(String[] params) {
-        GURLConnection urlConnection = new GURLConnection();
-
-        urlConnection.executeInternal(params);
+    public enum RequestType {
+        GET, POST, PUT, DELETE
     }
 
-    private void executeInternal(String[] params) {
-        mAsyncTask = new AsyncTask<String, Object, Object>() {
+    private AsyncTask<Object, Object, Object> mAsyncTask = null;
+
+    public static void execute(String url, int timeOut, RequestType requestType) {
+        GRESTURLConnection urlConnection = new GRESTURLConnection();
+        ArrayList<Object> connectionParams = new ArrayList<>();
+
+        connectionParams.add(url);
+        connectionParams.add(timeOut);
+        connectionParams.add(requestType);
+
+        urlConnection.executeInternal(connectionParams);
+    }
+
+    private void executeInternal(ArrayList<Object> connectionParams) {
+        mAsyncTask = new AsyncTask<Object, Object, Object>() {
 
             @Override
-            protected Object doInBackground(String... params) {
+            protected Object doInBackground(Object... params) {
+                String urlStr = (String) params[0];
+                int timeOut = (int) params[1];
+                RequestType requestType = (RequestType) params[2];
+
                 StringBuilder stringBuilder = new StringBuilder();
 
-                setParams(params);
-
                 try {
-                    URL url = new URL(mUrl);
+                    URL url = new URL(urlStr);
 
-                    // TODO: Refactor to compare the instance of one URLConnection object.
-                    if (mTimeOut > -1) {
-                        if (checkConnectionType(mUrl) == ConnectionType.HTTP) {
+                    if (timeOut > -1) {
+                        if (checkScheme(urlStr).equals(SchemeType.HTTP)) {
                             HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
 
-                            httpConn.setRequestMethod("GET");
-                            httpConn.setConnectTimeout(mTimeOut);
+                            httpConn.setRequestMethod(requestType.toString());
+                            httpConn.setConnectTimeout(timeOut);
 
                             if (httpConn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
                                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
@@ -63,11 +72,11 @@ public class GURLConnection {
                                 httpConn.disconnect();
                             }
 
-                        } else if (checkConnectionType(mUrl) == ConnectionType.HTTPS) {
+                        } else if (checkScheme(urlStr).equals(SchemeType.HTTPS)) {
                             HttpsURLConnection httpsConn = (HttpsURLConnection) url.openConnection();
 
-                            httpsConn.setRequestMethod("GET");
-                            httpsConn.setConnectTimeout(mTimeOut);
+                            httpsConn.setRequestMethod(requestType.toString());
+                            httpsConn.setConnectTimeout(timeOut);
 
                             if (httpsConn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
                                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpsConn.getInputStream()));
@@ -84,6 +93,9 @@ public class GURLConnection {
                                 bufferedReader.close();
                                 httpsConn.disconnect();
                             }
+
+                        } else {    // If the connection type is neither http nor https.
+                            return null;
                         }
                     }
 
@@ -94,19 +106,16 @@ public class GURLConnection {
                 return stringBuilder.toString();
             }
         };
-        mAsyncTask.execute(params);
+        mAsyncTask.execute(connectionParams);
     }
 
-    private void setParams(String[] params) {
-        mUrl = params[0];
-        mTimeOut = Integer.parseInt(params[1]);
-    }
-
-    private ConnectionType checkConnectionType(String url) {
-        if (url.startsWith("https:")) {
-            return ConnectionType.HTTPS;
+    private SchemeType checkScheme(String url) {
+        if (url.startsWith("http:")) {
+            return SchemeType.HTTP;
+        } else if (url.startsWith("https:")) {
+            return SchemeType.HTTPS;
         }
 
-        return ConnectionType.HTTP;
+        return null;
     }
 }
