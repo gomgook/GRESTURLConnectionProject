@@ -86,6 +86,10 @@ public class GRESTURLConnection {
                                 }
                                 bufferedReader.close();
                                 httpConn.disconnect();
+                            } else {
+
+                                // TODO: Return Error with response code and response message.
+                                return null;
                             }
 
                         } else if (checkScheme(urlStr).equals(SchemeType.HTTPS)) {
@@ -107,11 +111,17 @@ public class GRESTURLConnection {
                                 }
                                 bufferedReader.close();
                                 httpsConn.disconnect();
+                            } else {
+
+                                // TODO: Return Error with response code and response message.
+                                return null;
                             }
 
                         } else {    // If the connection type is neither http nor https.
                             return null;
                         }
+                    } else {
+                        return null;
                     }
 
                 } catch (Throwable e) {
