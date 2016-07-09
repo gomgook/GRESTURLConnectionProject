@@ -13,6 +13,6 @@ public class NMainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        GRESTURLConnection.execute("https://apis.daum.net/search/book?apikey=b5a623fe41c1e7dca3566b82ce436985&q=위인&output=json&pageno=1&result=20", 3000, GRESTURLConnection.RequestType.GET);
+        GRESTURLConnection.execute("https://apis.daum.net/search/book?apikey=b5a623fe41c1e7dca3566b82ce436985&q=위인&output=json&pageno=1&result=20", 3000, GRESTURLConnection.RequestType.GET, null);
     }
 }
