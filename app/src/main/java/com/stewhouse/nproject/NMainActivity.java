@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.stewhouse.nproject.utility.GRESTURLConnection;
+import com.stewhouse.gresturlconnection.GRESTURLConnection;
 
 public class NMainActivity extends AppCompatActivity implements GRESTURLConnection.GRESTURLConnectionListener {
 
