@@ -57,108 +57,113 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
 
     @Override
     protected Object doInBackground(HashMap... params) {
-        HashMap<String, Object> requestParams = (HashMap) params[0];
-
-        String urlStr = (String) requestParams.get(CONNECTION_PARAM_URL);
-        int timeOut = (int) requestParams.get(CONNECTION_PARAM_TIMEOUT);
-        RequestType requestType = (RequestType) requestParams.get(CONNECTION_PARAM_REQUEST_TYPE);
-
-        StringBuilder stringBuilder = new StringBuilder();
-
         try {
-            URL url = new URL(urlStr);
-            URLConnection conn = url.openConnection();
+            if (mListener != null) {
+                HashMap<String, Object> requestParams = (HashMap) params[0];
 
-            if (timeOut > -1) {
+                String urlStr = (String) requestParams.get(CONNECTION_PARAM_URL);
+                int timeOut = (int) requestParams.get(CONNECTION_PARAM_TIMEOUT);
+                RequestType requestType = (RequestType) requestParams.get(CONNECTION_PARAM_REQUEST_TYPE);
 
-                // Set Integrated parameters.
-                conn.setConnectTimeout(timeOut);
+                StringBuilder stringBuilder = new StringBuilder();
 
-                if (requestParams.get(CONNECTION_PARAM_HEADERS) != null) {
-                    setRequestHeader(conn, (HashMap<String, String>) requestParams.get(CONNECTION_PARAM_HEADERS));
-                }
+                URL url = new URL(urlStr);
+                URLConnection conn = url.openConnection();
 
-                if (requestParams.get(CONNECTION_PARAM_REQUEST_BODY) != null && requestParams.get(CONNECTION_PARAM_REQUEST_BODY_TYPE) != null) {
-                    String requestBody = (String) requestParams.get(CONNECTION_PARAM_REQUEST_BODY);
-                    String requestBodyType = (String) requestParams.get(CONNECTION_PARAM_REQUEST_BODY_TYPE);
+                if (timeOut > -1) {
 
-                    conn.addRequestProperty("content_type", requestBodyType);
-                    conn.setDoOutput(true);
-                    OutputStream outputStream = conn.getOutputStream();
-                    outputStream.write(requestBody.getBytes("UTF-8"));
-                    outputStream.close();
-                }
+                    // Set Integrated parameters.
+                    conn.setConnectTimeout(timeOut);
 
-                // Set parameters which is classified by whether the connection is HTTP or HTTPS.
-                if (checkScheme(urlStr).equals(SchemeType.HTTP)) {
-                    HttpURLConnection httpConn = (HttpURLConnection) conn;
-
-                    httpConn.setRequestMethod(requestType.toString());
-
-                    if (httpConn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
-                        String result;
-
-                        while (true) {
-                            result = bufferedReader.readLine();
-
-                            if (result == null) {
-                                break;
-                            }
-                            stringBuilder.append(result + "\n");
-                        }
-                        bufferedReader.close();
-                        httpConn.disconnect();
-                    } else {
-
-                        // TODO: Return Error with response code and response message.
-                        return null;
+                    if (requestParams.get(CONNECTION_PARAM_HEADERS) != null) {
+                        setRequestHeader(conn, (HashMap<String, String>) requestParams.get(CONNECTION_PARAM_HEADERS));
                     }
 
-                } else if (checkScheme(urlStr).equals(SchemeType.HTTPS)) {
-                    HttpsURLConnection httpsConn = (HttpsURLConnection) conn;
+                    if (requestParams.get(CONNECTION_PARAM_REQUEST_BODY) != null && requestParams.get(CONNECTION_PARAM_REQUEST_BODY_TYPE) != null) {
+                        String requestBody = (String) requestParams.get(CONNECTION_PARAM_REQUEST_BODY);
+                        String requestBodyType = (String) requestParams.get(CONNECTION_PARAM_REQUEST_BODY_TYPE);
 
-                    httpsConn.setRequestMethod(requestType.toString());
-
-                    if (httpsConn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpsConn.getInputStream()));
-                        String result;
-
-                        while (true) {
-                            result = bufferedReader.readLine();
-
-                            if (result == null) {
-                                break;
-                            }
-                            stringBuilder.append(result + "\n");
-                        }
-                        bufferedReader.close();
-                        httpsConn.disconnect();
-                    } else {
-
-                        // TODO: Return Error with response code and response message.
-                        return null;
+                        conn.addRequestProperty("content_type", requestBodyType);
+                        conn.setDoOutput(true);
+                        OutputStream outputStream = conn.getOutputStream();
+                        outputStream.write(requestBody.getBytes("UTF-8"));
+                        outputStream.close();
                     }
 
-                } else {    // If the connection type is neither http nor https.
-                    return null;
+                    // Set parameters which is classified by whether the connection is HTTP or HTTPS.
+                    if (checkScheme(urlStr).equals(SchemeType.HTTP)) {
+                        HttpURLConnection httpConn = (HttpURLConnection) conn;
+
+                        httpConn.setRequestMethod(requestType.toString());
+
+                        if (httpConn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
+                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
+                            String result;
+
+                            while (true) {
+                                result = bufferedReader.readLine();
+
+                                if (result == null) {
+                                    break;
+                                }
+                                stringBuilder.append(result + "\n");
+                            }
+                            bufferedReader.close();
+                            httpConn.disconnect();
+                        } else {
+                            return new GException(GException.ErrorType.RESPONSE_CODE_ERROR);
+                        }
+
+                    } else if (checkScheme(urlStr).equals(SchemeType.HTTPS)) {
+                        HttpsURLConnection httpsConn = (HttpsURLConnection) conn;
+
+                        httpsConn.setRequestMethod(requestType.toString());
+
+                        if (httpsConn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
+                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpsConn.getInputStream()));
+                            String result;
+
+                            while (true) {
+                                result = bufferedReader.readLine();
+
+                                if (result == null) {
+                                    break;
+                                }
+                                stringBuilder.append(result + "\n");
+                            }
+                            bufferedReader.close();
+                            httpsConn.disconnect();
+                        } else {
+                            return new GException(GException.ErrorType.RESPONSE_CODE_ERROR);
+                        }
+
+                    } else {    // If the connection type is neither http nor https.
+                        return null;
+                    }
+                } else {
+                    return new GException(GException.ErrorType.TIMEOUT_VALUE_INVALID);
                 }
+
+                return stringBuilder.toString();
             } else {
-                return null;
+                return new GException(GException.ErrorType.LISTENER_NULL_POINTER);
             }
-
         } catch (Throwable e) {
             e.printStackTrace();
-        }
+        };
 
-        return stringBuilder.toString();
+        return null;
     }
 
     @Override
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
 
-        mListener.onPostExecute(o);
+        if ((o instanceof GException) == false) {
+            mListener.onPostExecute(o);
+        } else {
+            return;
+        }
     }
 
     private SchemeType checkScheme(String url) {
