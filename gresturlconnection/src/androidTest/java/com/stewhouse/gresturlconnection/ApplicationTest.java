@@ -2,6 +2,9 @@ package com.stewhouse.gresturlconnection;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
+import android.util.Log;
+
+import java.util.HashMap;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
