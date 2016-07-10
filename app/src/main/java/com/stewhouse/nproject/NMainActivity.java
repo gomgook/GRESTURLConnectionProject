@@ -2,10 +2,11 @@ package com.stewhouse.nproject;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.stewhouse.nproject.utility.GRESTURLConnection;
 
-public class NMainActivity extends AppCompatActivity {
+public class NMainActivity extends AppCompatActivity implements GRESTURLConnection.GRESTURLConnectionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -13,6 +14,13 @@ public class NMainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        GRESTURLConnection.execute("https://apis.daum.net/search/book?apikey=b5a623fe41c1e7dca3566b82ce436985&q=위인&output=json&pageno=1&result=20", 3000, GRESTURLConnection.RequestType.GET, null);
+        GRESTURLConnection connection = new GRESTURLConnection();
+        connection.setListener(this);
+        connection.execute("https://apis.daum.net/search/book?apikey=b5a623fe41c1e7dca3566b82ce436985&q=위인&output=json&pageno=1&result=20", 3000, GRESTURLConnection.RequestType.GET, null, null, null);
+    }
+
+    @Override
+    public void onPostExecute(Object result) {
+        Log.e("RESULT", "" + result.toString());
     }
 }
