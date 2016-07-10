@@ -16,7 +16,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
         GRESTURLConnection connection = new GRESTURLConnection();
         connection.setListener(this);
-        connection.execute("https://apis.daum.net/search/book?apikey=b5a623fe41c1e7dca3566b82ce436985&q=위인&output=json&pageno=1&result=20", 3000, GRESTURLConnection.RequestType.GET, null, null, null);
+        connection.execute("https://apis.daum.net/search/book?apikey=b5a623fe41c1e7dca3566b82ce436985&q=위인&output=json&pageno=1&result=20", -2, GRESTURLConnection.RequestType.GET, null, null, null);
     }
 
     @Override

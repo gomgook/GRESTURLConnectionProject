@@ -21,7 +21,7 @@ public class GException extends Exception {
             case TIMEOUT_VALUE_INVALID:
                 Log.e(errorType.toString(), "The connection response code is not 200.");
             case LISTENER_NULL_POINTER:
-                Log.e(errorType.toString(), "The timeout value is not invalid. The timeout value should be over 0.\nTimeout value: ");
+                Log.e(errorType.toString(), "The timeout value is not invalid. The timeout value should be over 0.");
         }
     }
 }

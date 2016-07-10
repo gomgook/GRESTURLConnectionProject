@@ -165,11 +165,7 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
 
-        if ((o instanceof GException) == false) {
-            mListener.onPostExecute(o);
-        } else {
-            return;
-        }
+        mListener.onPostExecute(o);
     }
 
     private SchemeType checkScheme(String url) {
