@@ -18,7 +18,22 @@ public class ExampleUnitTest implements GRESTURLConnection.GRESTURLConnectionLis
         connection.setListener(this);
 
         // Not supported scheme.
-        connection.execute("jar://file", 0, null, null, null, null);
+        connection.execute("jar://file", null, 0, null, null, null, null);
+    }
+
+    @Test
+    public void requestParams() throws Exception {
+        GRESTURLConnection connection = new GRESTURLConnection();
+        connection.setListener(this);
+
+        // Add request parameters.
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("apikey", "b5a623fe41c1e7dca3566b82ce436985");
+        params.put("q", "위인");
+        params.put("output", "json");
+        params.put("pageno", 1);
+        params.put("result", 20);
+        connection.execute("https://apis.daum.net/search/book", params, 0, null, null, null, null);
     }
 
     @Test
@@ -27,7 +42,7 @@ public class ExampleUnitTest implements GRESTURLConnection.GRESTURLConnectionLis
         connection.setListener(this);
 
         // Not supported request type.
-        connection.execute("https://apis.daum.net/search/book?apikey=b5a623fe41c1e7dca3566b82ce436985&q=위인&output=json&pageno=1&result=20", 0, null, null, null, null);
+        connection.execute("https://apis.daum.net/search/book", null, 0, null, null, null, null);
     }
 
     @Test
@@ -36,7 +51,7 @@ public class ExampleUnitTest implements GRESTURLConnection.GRESTURLConnectionLis
         connection.setListener(this);
 
         // Invalid timeout.
-        connection.execute("https://apis.daum.net/search/book?apikey=b5a623fe41c1e7dca3566b82ce436985&q=위인&output=json&pageno=1&result=20", -3000, GRESTURLConnection.RequestType.GET, null, null, null);
+        connection.execute("https://apis.daum.net/search/book", null, -3000, GRESTURLConnection.RequestType.GET, null, null, null);
     }
 
     @Test
@@ -48,7 +63,7 @@ public class ExampleUnitTest implements GRESTURLConnection.GRESTURLConnectionLis
         String headerStr = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5 (.NET CLR 3.5.30729)";
         HashMap<String, String> headers = new HashMap<>();
         headers.put("User-Agent", headerStr);
-        connection.execute("https://apis.daum.net/search/book?apikey=b5a623fe41c1e7dca3566b82ce436985&q=위인&output=json&pageno=1&result=20", 3000, GRESTURLConnection.RequestType.GET, headers, null, null);
+        connection.execute("https://apis.daum.net/search/book", null, 3000, GRESTURLConnection.RequestType.GET, headers, null, null);
     }
 
     @Test
@@ -58,7 +73,7 @@ public class ExampleUnitTest implements GRESTURLConnection.GRESTURLConnectionLis
 
         // Add request body.
         String bodyStr = "{\"id\":\"1\",\"title\":\"Hello World!\",\"body\":\"This is my first post!\"}";
-        connection.execute("https://apis.daum.net/search/book?apikey=b5a623fe41c1e7dca3566b82ce436985&q=위인&output=json&pageno=1&result=20", 3000, GRESTURLConnection.RequestType.GET, null, bodyStr, null);
+        connection.execute("https://apis.daum.net/search/book", null, 3000, GRESTURLConnection.RequestType.GET, null, bodyStr, null);
     }
 
     @Test
@@ -68,7 +83,7 @@ public class ExampleUnitTest implements GRESTURLConnection.GRESTURLConnectionLis
 
         // Add request body with body type.
         String bodyStr = "{\"id\":\"1\",\"title\":\"Hello World!\",\"body\":\"This is my first post!\"}";
-        connection.execute("https://apis.daum.net/search/book?apikey=b5a623fe41c1e7dca3566b82ce436985&q=위인&output=json&pageno=1&result=20", 3000, GRESTURLConnection.RequestType.GET, null, bodyStr, "application/json");
+        connection.execute("https://apis.daum.net/search/book", null, 3000, GRESTURLConnection.RequestType.GET, null, bodyStr, "application/json");
     }
 
     @Override

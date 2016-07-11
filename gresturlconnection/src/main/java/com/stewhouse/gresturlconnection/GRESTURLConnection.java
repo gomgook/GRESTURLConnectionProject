@@ -22,6 +22,7 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
     }
 
     private final static String CONNECTION_PARAM_URL = "url";
+    private final static String CONNECTION_PARAM_PARAMS = "params";
     private final static String CONNECTION_PARAM_TIMEOUT = "timeout";
     private final static String CONNECTION_PARAM_REQUEST_TYPE = "request_type";
     private final static String CONNECTION_PARAM_HEADERS = "headers";
@@ -42,10 +43,11 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
         mListener = listener;
     }
 
-    public void execute(String url, int timeOut, RequestType requestType, HashMap<String, String> headers, String requestBody, String requestBodyType) {
+    public void execute(String url, HashMap<String, String> params, int timeOut, RequestType requestType, HashMap<String, String> headers, String requestBody, String requestBodyType) {
         HashMap<String, Object> connectionParams = new HashMap<>();
 
         connectionParams.put(CONNECTION_PARAM_URL, url);
+        connectionParams.put(CONNECTION_PARAM_PARAMS, params);
         connectionParams.put(CONNECTION_PARAM_TIMEOUT, timeOut);
         connectionParams.put(CONNECTION_PARAM_REQUEST_TYPE, requestType);
         connectionParams.put(CONNECTION_PARAM_HEADERS, headers);
@@ -62,6 +64,9 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
                 HashMap<String, Object> requestParams = (HashMap) params[0];
 
                 String urlStr = (String) requestParams.get(CONNECTION_PARAM_URL);
+                if (requestParams.get(CONNECTION_PARAM_PARAMS) != null) {
+                    urlStr = setParams((HashMap<String, String>) requestParams.get(CONNECTION_PARAM_PARAMS), urlStr);
+                }
                 int timeOut = (int) requestParams.get(CONNECTION_PARAM_TIMEOUT);
                 RequestType requestType = (RequestType) requestParams.get(CONNECTION_PARAM_REQUEST_TYPE);
 
@@ -176,6 +181,18 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
         }
 
         return null;
+    }
+
+    private String setParams(HashMap<String, String> params, String url) {
+        StringBuilder stringBuilder = new StringBuilder(url);
+
+        stringBuilder.append("?");
+        for (String key : params.keySet()) {
+            stringBuilder.append(key + "=" + params.get(key) + "&");
+        }
+        stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length());
+
+        return stringBuilder.toString();
     }
 
     private void setRequestHeader(URLConnection conn, HashMap<String, String> headers) {
