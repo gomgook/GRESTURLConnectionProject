@@ -12,6 +12,7 @@ import java.util.HashMap;
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
  */
 public class ExampleUnitTest implements GRESTURLConnection.GRESTURLConnectionListener {
+
     @Test
     public void notSupportedScheme() throws Exception {
         GRESTURLConnection connection = new GRESTURLConnection();
@@ -27,12 +28,12 @@ public class ExampleUnitTest implements GRESTURLConnection.GRESTURLConnectionLis
         connection.setListener(this);
 
         // Add request parameters.
-        HashMap<String, Object> params = new HashMap<>();
+        HashMap<String, String> params = new HashMap<>();
         params.put("apikey", "b5a623fe41c1e7dca3566b82ce436985");
         params.put("q", "위인");
         params.put("output", "json");
-        params.put("pageno", 1);
-        params.put("result", 20);
+        params.put("pageno", "1");
+        params.put("result", "20");
         connection.execute("https://apis.daum.net/search/book", params, 0, null, null, null, null);
     }
 
