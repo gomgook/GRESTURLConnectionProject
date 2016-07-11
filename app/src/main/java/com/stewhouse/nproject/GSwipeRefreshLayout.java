@@ -9,6 +9,7 @@ import android.widget.ListView;
  * Created by Gomguk on 2016-07-11.
  */
 public class GSwipeRefreshLayout extends SwipeRefreshLayout {
+
     private ListView mListView = null;
     private NBaseAdapter mAdapter = null;
 

@@ -64,6 +64,7 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
                 HashMap<String, Object> requestParams = (HashMap) params[0];
 
                 String urlStr = (String) requestParams.get(CONNECTION_PARAM_URL);
+
                 if (requestParams.get(CONNECTION_PARAM_PARAMS) != null) {
                     urlStr = setParams((HashMap<String, String>) requestParams.get(CONNECTION_PARAM_PARAMS), urlStr);
                 }
