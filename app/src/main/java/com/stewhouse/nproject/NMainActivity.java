@@ -2,6 +2,7 @@ package com.stewhouse.nproject;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.stewhouse.gresturlconnection.GRESTURLConnection;
@@ -14,12 +15,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class NMainActivity extends AppCompatActivity implements GRESTURLConnection.GRESTURLConnectionListener {
+public class NMainActivity extends AppCompatActivity implements GRESTURLConnection.GRESTURLConnectionListener, AbsListView.OnScrollListener {
 
     private ListView mListView = null;
     private NBaseAdapter mListAdapter = null;
+
     private int mPage = -1;
     private int mTotalCount = -1;
+    private boolean mCanLoadExtra = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +31,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         setContentView(R.layout.activity_main);
 
         mListView = (ListView) findViewById(R.id.view_list);
+        mListView.setOnScrollListener(this);
         mListAdapter = new NBaseAdapter(this);
         mPage = 1;
 
@@ -83,7 +87,8 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                                     if (channel.getItems() != null) {
                                         ArrayList<Item> data = channel.getItems();
 
-                                        setListView(data);
+                                        setListView(data, mPage > 1);
+                                        checkCanLoadExtra();
                                     }
                                 }
 //                                if (channel != null && channel.getItems() != null) {
@@ -114,8 +119,45 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         }
     }
 
-    private void setListView(ArrayList<Item> data) {
-        mListAdapter.setData(data);
+    private void setListView(ArrayList<Item> data, boolean isDataAdd) {
+        ArrayList<Item> listData;
+
+        if (isDataAdd == true) {
+            listData = mListAdapter.getData();
+            listData.addAll(data);
+        } else {
+            listData = data;
+        }
+        mListAdapter.setData(listData);
         mListView.setAdapter(mListAdapter);
+    }
+
+    private void checkCanLoadExtra() {
+        if (NConstants.LIST_EXTRA_LOADING_PRE_COUNT * mPage < mTotalCount) {
+            mCanLoadExtra = true;
+        } else {
+            mCanLoadExtra = false;
+        }
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        if (mListAdapter != null) {
+            if (AbsListView.OnScrollListener.SCROLL_STATE_IDLE == scrollState) {
+                mListAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        if(firstVisibleItem + visibleItemCount > totalItemCount - NConstants.LIST_EXTRA_LOADING_PRE_COUNT) {
+            if (mCanLoadExtra == true) {
+                mCanLoadExtra = false;
+                mPage++;
+
+                loadData();
+            }
+        }
     }
 }
