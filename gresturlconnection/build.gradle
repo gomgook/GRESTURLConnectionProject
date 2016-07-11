@@ -25,12 +25,12 @@ dependencies {
 }
 
 task deleteJar(type: Delete) {
-    delete 'libs/gresturlconnectionlib.jar'
+    delete '../app/libs/gresturlconnectionlib.jar'
 }
 
 task createJar(type: Copy) {
     from('build/intermediates/bundles/release')
-    into('libs/')
+    into('../app/libs/')
     include('classes.jar')
     rename('classes.jar', 'gresturlconnectionlib.jar')
 }
