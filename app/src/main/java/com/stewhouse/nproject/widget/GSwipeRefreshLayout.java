@@ -1,10 +1,12 @@
-package com.stewhouse.nproject;
+package com.stewhouse.nproject.widget;
 
 import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ListView;
+
+import com.stewhouse.nproject.NBaseAdapter;
 
 /**
  * Created by Gomguk on 2016-07-11.
