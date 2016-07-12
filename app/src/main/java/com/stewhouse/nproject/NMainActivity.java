@@ -5,11 +5,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.stewhouse.gresturlconnection.GRESTURLConnection;
 import com.stewhouse.nproject.model.Channel;
@@ -31,7 +34,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
     private static final String API_URL = "https://apis.daum.net/search/book";
 
-    private String mSearchKeyword = "위인";
+    private String mSearchKeyword = null;
 
     private GSwipeRefreshLayout mSwipeRefreshLayout = null;
 
@@ -78,6 +81,18 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                 public void afterTextChanged(Editable s) {
                 }
             });
+            editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        mSearchKeyword = v.getText().toString();
+                        mSwipeRefreshLayout.getAdapter().setSearchKeyword(mSearchKeyword);
+                        doSearch(false);
+                    }
+                    return false;
+                }
+            });
         }
 
         // Set SwipeRefreshLayout.
@@ -86,18 +101,24 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
             @Override
             public void onRefresh() {
-                mPage = 1;
-                loadData();
+                doSearch(false);
             }
         });
         mSwipeRefreshLayout.setListView((ListView) findViewById(R.id.view_list));
         mSwipeRefreshLayout.setAdapter(new NBaseAdapter(this));
-        mSwipeRefreshLayout.getAdapter().setSearchKeyword(mSearchKeyword);
         mSwipeRefreshLayout.setFooterLoadingView(getLayoutInflater().inflate(R.layout.view_listview_footer, null));
         mSwipeRefreshLayout.getListView().setOnScrollListener(this);
         mSwipeRefreshLayout.getListView().setDivider(null);
 
         mPage = 1;
+    }
+
+    private void doSearch(boolean isDataAdd) {
+        if (isDataAdd == false) {
+            mPage = 1;
+        } else {
+            mPage++;
+        }
         loadData();
     }
 
@@ -195,9 +216,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         if (firstVisibleItem + visibleItemCount > totalItemCount - NConstants.LIST_EXTRA_LOADING_PRE_COUNT) {
             if (mCanLoadExtra == true) {
                 mCanLoadExtra = false;
-                mPage++;
-
-                loadData();
+                doSearch(true);
             }
         }
     }

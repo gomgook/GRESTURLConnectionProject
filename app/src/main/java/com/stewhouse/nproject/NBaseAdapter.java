@@ -64,7 +64,7 @@ public class NBaseAdapter extends BaseAdapter {
         ViewHolder holder;
 
         if (convertView == null) {
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.view_listview_cell, parent, false);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.view_listview_result_cell, parent, false);
             holder = new ViewHolder();
             holder.title_text = (TextView) convertView.findViewById(R.id.title_text);
 
