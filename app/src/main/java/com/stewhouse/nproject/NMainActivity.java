@@ -133,7 +133,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     }
 
     private void checkCanLoadExtra() {
-        if (NConstants.LIST_EXTRA_LOADING_PRE_COUNT * mPage < mTotalCount) {
+        if (NConstants.LIST_EXTRA_LOADING_PRE_COUNT * mPage < mTotalCount && mPage < NConstants.API_PAGE_LIMIT) {
             mCanLoadExtra = true;
         } else {
             mCanLoadExtra = false;

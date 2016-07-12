@@ -6,6 +6,7 @@ package com.stewhouse.nproject;
 public class NConstants {
 
     public static final String API_KEY = "b5a623fe41c1e7dca3566b82ce436985";
+    public static final int API_PAGE_LIMIT = 3;
 
     public static final int LIST_EXTRA_LOADING_PRE_COUNT = 20;
 }
