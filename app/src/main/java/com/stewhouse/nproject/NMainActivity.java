@@ -123,7 +123,6 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
             mSwipeRefreshLayout.setFooterLoadingView(view);
         }
 
-
         mPage = 1;
     }
 
@@ -172,9 +171,21 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
                                     setListView(data, mPage > 1);
                                     checkCanLoadExtra();
+                                } else {
+
+                                    // TODO: Handle when Item list is null.
                                 }
+                            } else {
+
+                                // TODO: Handle when totalCount is invalid value.
                             }
+                        } else {
+
+                            // TODO: Handle when the Channel model is null.
                         }
+                    } else {
+
+                        // TODO: Handle when the result doesn't have ROOT JSON parameter.
                     }
                 } else {
 
