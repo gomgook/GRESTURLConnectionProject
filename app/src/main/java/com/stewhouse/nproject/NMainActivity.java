@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.stewhouse.gresturlconnection.GRESTURLConnection;
 import com.stewhouse.nproject.model.Channel;
 import com.stewhouse.nproject.model.Item;
+import com.stewhouse.nproject.widget.GSwipeRefreshLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
