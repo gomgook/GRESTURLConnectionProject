@@ -1,6 +1,7 @@
 package com.stewhouse.nproject;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.AbsListView;
 import android.widget.ListView;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 
 public class NMainActivity extends AppCompatActivity implements GRESTURLConnection.GRESTURLConnectionListener, AbsListView.OnScrollListener {
 
+    private GSwipeRefreshLayout mSwipeRefreshLayout = null;
     private ListView mListView = null;
     private NBaseAdapter mListAdapter = null;
 
@@ -30,6 +32,15 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
         setContentView(R.layout.activity_main);
 
+        mSwipeRefreshLayout = (GSwipeRefreshLayout) findViewById(R.id.layout_swiperefresh);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+                mPage = 1;
+                loadData();
+            }
+        });
         mListView = (ListView) findViewById(R.id.view_list);
         mListView.setOnScrollListener(this);
         mListAdapter = new NBaseAdapter(this);
@@ -42,6 +53,9 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     protected void onDestroy() {
         super.onDestroy();
 
+        if (mSwipeRefreshLayout != null) {
+            mSwipeRefreshLayout = null;
+        }
         if (mListView != null) {
             mListView = null;
         }
@@ -91,18 +105,6 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                                         checkCanLoadExtra();
                                     }
                                 }
-//                                if (channel != null && channel.getItems() != null) {
-//                                    ArrayList<Item> data;
-//
-//                                    if (mCanLoadExtra == true) {
-//                                        data = mListAdapter.getData();
-//                                        data.addAll(channel.getItems());
-//                                    } else {
-//                                        data = channel.getItems();
-//                                    }
-//                                    mListAdapter.setData(data);
-//                                    mListView.setAdapter(mListAdapter);
-//                                }
                             }
                         }
                     }
@@ -130,6 +132,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         }
         mListAdapter.setData(listData);
         mListView.setAdapter(mListAdapter);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     private void checkCanLoadExtra() {
