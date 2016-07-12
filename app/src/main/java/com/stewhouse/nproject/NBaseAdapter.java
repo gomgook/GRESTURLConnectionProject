@@ -1,6 +1,8 @@
 package com.stewhouse.nproject;
 
 import android.content.Context;
+import android.os.Build;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,8 @@ public class NBaseAdapter extends BaseAdapter {
     private Context mContext = null;
     private ArrayList<Item> mData = null;
 
+    private String mSearchKeyword = null;
+
     public NBaseAdapter(Context context) {
         mContext = context;
     }
@@ -30,6 +34,10 @@ public class NBaseAdapter extends BaseAdapter {
 
     public ArrayList<Item> getData() {
         return mData;
+    }
+
+    public void setSearchKeyword(String searchKeyword) {
+        mSearchKeyword = searchKeyword;
     }
 
     @Override
@@ -66,11 +74,23 @@ public class NBaseAdapter extends BaseAdapter {
         }
 
         Item item = (Item) getItem(position);
+
         if (item != null) {
             if (item.getTitle() != null) {
-                holder.title_text.setText(item.getTitle());
+                String htmlStr = item.getTitle();
+                htmlStr = htmlStr.replace(mSearchKeyword, "<font color=\"" + getColor(mContext, R.color.view_listview_cell_title_highlight) + "\">" + mSearchKeyword + "</font>");
+
+                holder.title_text.setText(Html.fromHtml(htmlStr));
             }
         }
         return convertView;
+    }
+
+    private int getColor(Context context, int id) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return context.getColor(id);
+        } else {
+            return context.getResources().getColor(id);
+        }
     }
 }

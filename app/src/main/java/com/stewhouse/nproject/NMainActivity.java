@@ -31,6 +31,8 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
     private static final String API_URL = "https://apis.daum.net/search/book";
 
+    private String mSearchKeyword = "위인";
+
     private GSwipeRefreshLayout mSwipeRefreshLayout = null;
 
     private int mPage = -1;
@@ -46,32 +48,37 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         // Set Search layout.
         final ImageView deleteBtn = (ImageView) findViewById(R.id.btn_delete);
         final EditText editText = (EditText) findViewById(R.id.edit_search);
-        deleteBtn.setOnClickListener(new View.OnClickListener() {
+        if (deleteBtn != null) {
+            deleteBtn.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                editText.setText("");
-            }
-        });
-        editText.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() > 0) {
-                    deleteBtn.setVisibility(View.VISIBLE);
-                } else {
-                    deleteBtn.setVisibility(View.GONE);
+                @Override
+                public void onClick(View v) {
+                    editText.setText("");
                 }
-            }
+            });
+        }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+        if (editText != null) {
+            editText.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (s.length() > 0) {
+                        deleteBtn.setVisibility(View.VISIBLE);
+                    } else {
+                        deleteBtn.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            });
+        }
 
         // Set SwipeRefreshLayout.
         mSwipeRefreshLayout = (GSwipeRefreshLayout) findViewById(R.id.layout_swiperefresh);
@@ -85,6 +92,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         });
         mSwipeRefreshLayout.setListView((ListView) findViewById(R.id.view_list));
         mSwipeRefreshLayout.setAdapter(new NBaseAdapter(this));
+        mSwipeRefreshLayout.getAdapter().setSearchKeyword(mSearchKeyword);
         mSwipeRefreshLayout.setFooterLoadingView(getLayoutInflater().inflate(R.layout.view_listview_footer, null));
         mSwipeRefreshLayout.getListView().setOnScrollListener(this);
         mSwipeRefreshLayout.getListView().setDivider(null);
@@ -101,7 +109,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         HashMap<String, String> params = new HashMap<>();
 
         params.put(API_PARAM_APIKEY, NConstants.API_KEY);
-        params.put(API_PARAM_KEYWORD, "위인");
+        params.put(API_PARAM_KEYWORD, mSearchKeyword);
         params.put(API_PARAM_OUTPUT, "json");
         params.put(API_PARAM_PAGENO, String.valueOf(mPage));
         params.put(API_PARAM_RESULT, String.valueOf(NConstants.LIST_EXTRA_LOADING_PRE_COUNT));
