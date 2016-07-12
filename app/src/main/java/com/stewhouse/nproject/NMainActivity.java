@@ -175,15 +175,14 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                                 }
                             }
                         }
-
                     }
                 } else {
 
-                    // TODO: Process each Exception cases.
+                    // TODO: Handle when connection result is not String(Error case).
                 }
             } else {
 
-                // TODO: Process error case.
+                // TODO: Handle when connection result is null(Error case).
             }
         } catch (JSONException e) {
             e.printStackTrace();
