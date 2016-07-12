@@ -3,7 +3,12 @@ package com.stewhouse.nproject;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
 import android.widget.AbsListView;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.stewhouse.gresturlconnection.GRESTURLConnection;
@@ -38,6 +43,37 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
         setContentView(R.layout.activity_main);
 
+        // Set Search layout.
+        final ImageView deleteBtn = (ImageView) findViewById(R.id.btn_delete);
+        final EditText editText = (EditText) findViewById(R.id.edit_search);
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                editText.setText("");
+            }
+        });
+        editText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0) {
+                    deleteBtn.setVisibility(View.VISIBLE);
+                } else {
+                    deleteBtn.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        // Set SwipeRefreshLayout.
         mSwipeRefreshLayout = (GSwipeRefreshLayout) findViewById(R.id.layout_swiperefresh);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
@@ -52,8 +88,8 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         mSwipeRefreshLayout.setFooterLoadingView(getLayoutInflater().inflate(R.layout.view_listview_footer, null));
         mSwipeRefreshLayout.getListView().setOnScrollListener(this);
         mSwipeRefreshLayout.getListView().setDivider(null);
-        mPage = 1;
 
+        mPage = 1;
         loadData();
     }
 

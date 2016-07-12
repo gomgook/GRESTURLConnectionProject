@@ -18,7 +18,8 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="16dp"
-            android:src="@drawable/icon_keycancel"/>
+            android:src="@drawable/icon_keycancel"
+            android:visibility="gone"/>
 
         <EditText
             android:id="@+id/edit_search"
@@ -29,7 +30,9 @@
             android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"
             android:background="@android:color/transparent"
+            android:lines="1"
             android:textSize="16dp"
+            android:textColor="@color/bg_search_cell_text"
             android:textColorHint="@color/bg_search_cell_hint_text"
             android:hint="@string/search_hint"/>
 
