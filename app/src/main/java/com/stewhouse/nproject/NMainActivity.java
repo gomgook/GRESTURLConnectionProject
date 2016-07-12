@@ -3,6 +3,7 @@ package com.stewhouse.nproject;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
@@ -21,6 +22,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     private GSwipeRefreshLayout mSwipeRefreshLayout = null;
     private ListView mListView = null;
     private NBaseAdapter mListAdapter = null;
+    private View mFooterLoadingView = null;
 
     private int mPage = -1;
     private int mTotalCount = -1;
@@ -46,33 +48,15 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         mListView = mSwipeRefreshLayout.getListView();
         mListView.setOnScrollListener(this);
         mListAdapter = mSwipeRefreshLayout.getAdapter();
+        mFooterLoadingView = getLayoutInflater().inflate(R.layout.view_listview_footer, null);
         mPage = 1;
 
         loadData();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (mSwipeRefreshLayout != null) {
-            mSwipeRefreshLayout = null;
-        }
-        if (mListView != null) {
-            mListView = null;
-        }
-        if (mListAdapter != null) {
-            mListAdapter = null;
-        }
-        if (mPage > -1) {
-            mPage = -1;
-        }
-        if (mTotalCount > -1) {
-            mTotalCount = -1;
-        }
-    }
-
     private void loadData() {
+        addLoadingFooter();
+
         GRESTURLConnection connection = new GRESTURLConnection();
         connection.setListener(this);
         HashMap<String, String> params = new HashMap<>();
@@ -87,6 +71,8 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
     @Override
     public void onPostExecute(Object result) {
+        removeLoadingFooter();
+
         try {
             if (result != null) {
                 if (result instanceof String) {
@@ -156,13 +142,24 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        if(firstVisibleItem + visibleItemCount > totalItemCount - NConstants.LIST_EXTRA_LOADING_PRE_COUNT) {
+        if (firstVisibleItem + visibleItemCount > totalItemCount - NConstants.LIST_EXTRA_LOADING_PRE_COUNT) {
             if (mCanLoadExtra == true) {
                 mCanLoadExtra = false;
                 mPage++;
 
                 loadData();
             }
+        }
+    }
+
+    private void addLoadingFooter() {
+        removeLoadingFooter();
+        mListView.addFooterView(mFooterLoadingView);
+    }
+
+    private void removeLoadingFooter() {
+        while (mListView.getFooterViewsCount() != 0) {
+            mListView.removeFooterView(mFooterLoadingView);
         }
     }
 }
