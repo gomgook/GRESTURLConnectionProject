@@ -4,6 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.stewhouse.nproject.NMainActivity">
+    
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="56dp"-->
+        <!--android:background="@color/bg_search_cell">-->
+
+    <!--</RelativeLayout>-->
 
     <com.stewhouse.nproject.GSwipeRefreshLayout
         android:id="@+id/layout_swiperefresh"

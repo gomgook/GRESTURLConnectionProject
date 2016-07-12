@@ -51,6 +51,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         mSwipeRefreshLayout.setAdapter(new NBaseAdapter(this));
         mSwipeRefreshLayout.setFooterLoadingView(getLayoutInflater().inflate(R.layout.view_listview_footer, null));
         mSwipeRefreshLayout.getListView().setOnScrollListener(this);
+        mSwipeRefreshLayout.getListView().setDivider(null);
         mPage = 1;
 
         loadData();
