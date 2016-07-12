@@ -3,7 +3,6 @@ package com.stewhouse.nproject;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
@@ -19,10 +18,15 @@ import java.util.HashMap;
 
 public class NMainActivity extends AppCompatActivity implements GRESTURLConnection.GRESTURLConnectionListener, AbsListView.OnScrollListener {
 
+    private static final String API_PARAM_APIKEY = "apikey";
+    private static final String API_PARAM_KEYWORD = "q";
+    private static final String API_PARAM_OUTPUT = "output";
+    private static final String API_PARAM_PAGENO = "pageno";
+    private static final String API_PARAM_RESULT = "result";
+
+    private static final String API_URL = "https://apis.daum.net/search/book";
+
     private GSwipeRefreshLayout mSwipeRefreshLayout = null;
-    private ListView mListView = null;
-    private NBaseAdapter mListAdapter = null;
-    private View mFooterLoadingView = null;
 
     private int mPage = -1;
     private int mTotalCount = -1;
@@ -45,33 +49,31 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         });
         mSwipeRefreshLayout.setListView((ListView) findViewById(R.id.view_list));
         mSwipeRefreshLayout.setAdapter(new NBaseAdapter(this));
-        mListView = mSwipeRefreshLayout.getListView();
-        mListView.setOnScrollListener(this);
-        mListAdapter = mSwipeRefreshLayout.getAdapter();
-        mFooterLoadingView = getLayoutInflater().inflate(R.layout.view_listview_footer, null);
+        mSwipeRefreshLayout.setFooterLoadingView(getLayoutInflater().inflate(R.layout.view_listview_footer, null));
+        mSwipeRefreshLayout.getListView().setOnScrollListener(this);
         mPage = 1;
 
         loadData();
     }
 
     private void loadData() {
-        addLoadingFooter();
+        mSwipeRefreshLayout.addLoadingFooter();
 
         GRESTURLConnection connection = new GRESTURLConnection();
         connection.setListener(this);
         HashMap<String, String> params = new HashMap<>();
 
-        params.put("apikey", NConstants.API_KEY);
-        params.put("q", "위인");
-        params.put("output", "json");
-        params.put("pageno", String.valueOf(mPage));
-        params.put("result", String.valueOf(NConstants.LIST_EXTRA_LOADING_PRE_COUNT));
-        connection.execute("https://apis.daum.net/search/book", params, 3000, GRESTURLConnection.RequestType.GET, null, null, null);
+        params.put(API_PARAM_APIKEY, NConstants.API_KEY);
+        params.put(API_PARAM_KEYWORD, "위인");
+        params.put(API_PARAM_OUTPUT, "json");
+        params.put(API_PARAM_PAGENO, String.valueOf(mPage));
+        params.put(API_PARAM_RESULT, String.valueOf(NConstants.LIST_EXTRA_LOADING_PRE_COUNT));
+        connection.execute(API_URL, params, NConstants.CONNECTION_TIMEOUT, GRESTURLConnection.RequestType.GET, null, null, null);
     }
 
     @Override
     public void onPostExecute(Object result) {
-        removeLoadingFooter();
+        mSwipeRefreshLayout.removeLoadingFooter();
 
         try {
             if (result != null) {
@@ -111,15 +113,16 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
     private void setListView(ArrayList<Item> data, boolean isDataAdd) {
         ArrayList<Item> listData;
+        NBaseAdapter listAdapter = mSwipeRefreshLayout.getAdapter();
 
         if (isDataAdd == true) {
-            listData = mListAdapter.getData();
+            listData = listAdapter.getData();
             listData.addAll(data);
         } else {
             listData = data;
         }
-        mListAdapter.setData(listData);
-        mListView.setAdapter(mListAdapter);
+        listAdapter.setData(listData);
+        mSwipeRefreshLayout.getListView().setAdapter(listAdapter);
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
@@ -133,9 +136,11 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-        if (mListAdapter != null) {
+        NBaseAdapter listAdapter = mSwipeRefreshLayout.getAdapter();
+
+        if (listAdapter != null) {
             if (AbsListView.OnScrollListener.SCROLL_STATE_IDLE == scrollState) {
-                mListAdapter.notifyDataSetChanged();
+                listAdapter.notifyDataSetChanged();
             }
         }
     }
@@ -149,17 +154,6 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
                 loadData();
             }
-        }
-    }
-
-    private void addLoadingFooter() {
-        removeLoadingFooter();
-        mListView.addFooterView(mFooterLoadingView);
-    }
-
-    private void removeLoadingFooter() {
-        while (mListView.getFooterViewsCount() != 0) {
-            mListView.removeFooterView(mFooterLoadingView);
         }
     }
 }

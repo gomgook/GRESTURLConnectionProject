@@ -9,4 +9,6 @@ public class NConstants {
     public static final int API_PAGE_LIMIT = 3;
 
     public static final int LIST_EXTRA_LOADING_PRE_COUNT = 20;
+
+    public static final int CONNECTION_TIMEOUT = 3000;
 }
