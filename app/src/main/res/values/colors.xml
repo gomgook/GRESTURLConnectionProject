@@ -10,5 +10,6 @@
 
     <color name="bg_search_cell">#ffffff</color>
     <color name="view_search_cell_line">#D1000000</color>
+    <color name="bg_search_cell_text">#444444</color>
     <color name="bg_search_cell_hint_text">#bfbfbfbf</color>
 </resources>
