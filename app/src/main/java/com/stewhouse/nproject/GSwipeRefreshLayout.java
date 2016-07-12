@@ -11,17 +11,25 @@ import android.widget.ListView;
 public class GSwipeRefreshLayout extends SwipeRefreshLayout {
 
     private ListView mListView = null;
-    private NBaseAdapter mAdapter = null;
+    private NBaseAdapter mListAdapter = null;
 
     public GSwipeRefreshLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    public ListView getListView() {
+        return mListView;
     }
 
     public void setListView(ListView listView) {
         mListView = listView;
     }
 
+    public NBaseAdapter getAdapter() {
+        return mListAdapter;
+    }
+
     public void setAdapter(NBaseAdapter adapter) {
-        mAdapter = adapter;
+        mListAdapter = adapter;
     }
 }
