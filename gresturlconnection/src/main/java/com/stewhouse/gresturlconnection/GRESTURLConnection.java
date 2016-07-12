@@ -120,7 +120,7 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
                                 bufferedReader.close();
                                 httpConn.disconnect();
                             } else {
-                                return new GException(GException.ErrorType.RESPONSE_CODE_ERROR);
+                                throw GException.makeGException(GException.ErrorType.RESPONSE_CODE_ERROR);
                             }
 
                         } else if (checkScheme(urlStr).equals(SchemeType.HTTPS)) {
@@ -143,26 +143,26 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
                                 bufferedReader.close();
                                 httpsConn.disconnect();
                             } else {
-                                return new GException(GException.ErrorType.RESPONSE_CODE_ERROR);
+                                throw GException.makeGException(GException.ErrorType.RESPONSE_CODE_ERROR);
                             }
 
                         } else {    // If the connection type is neither http nor https.
-                            return new GException(GException.ErrorType.SCHEME_NOT_SUPPORTED);
+                            throw GException.makeGException(GException.ErrorType.SCHEME_NOT_SUPPORTED);
                         }
                     } else {
-                        return new GException(GException.ErrorType.REQUEST_TYPE_NOT_SUPPORTED);
+                        throw GException.makeGException(GException.ErrorType.REQUEST_TYPE_NOT_SUPPORTED);
                     }
                 } else {
-                    return new GException(GException.ErrorType.TIMEOUT_VALUE_INVALID);
+                    throw GException.makeGException(GException.ErrorType.TIMEOUT_VALUE_INVALID);
                 }
 
                 return stringBuilder.toString();
             } else {
-                return new GException(GException.ErrorType.LISTENER_NULL_POINTER);
+                throw GException.makeGException(GException.ErrorType.LISTENER_NULL_POINTER);
             }
         } catch (Throwable e) {
             e.printStackTrace();
-        };
+        }
 
         return null;
     }
