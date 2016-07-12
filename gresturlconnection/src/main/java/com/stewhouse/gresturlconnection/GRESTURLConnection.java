@@ -61,7 +61,7 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
     protected Object doInBackground(HashMap... params) {
         try {
             if (mListener != null) {
-                HashMap<String, Object> requestParams = (HashMap) params[0];
+                HashMap<String, Object> requestParams = (HashMap<String, Object>) params[0];
 
                 String urlStr = (String) requestParams.get(CONNECTION_PARAM_URL);
 
@@ -100,53 +100,58 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
 
                     // Set parameters which is classified by whether the connection is HTTP or HTTPS.
                     if (requestType != null) {
-                        if (checkScheme(urlStr).equals(SchemeType.HTTP)) {
-                            HttpURLConnection httpConn = (HttpURLConnection) conn;
+                        SchemeType schemeType = checkScheme(urlStr);
 
-                            httpConn.setRequestMethod(requestType.toString());
+                        if (schemeType != null) {
+                            if (schemeType.equals(SchemeType.HTTP)) {
+                                HttpURLConnection httpConn = (HttpURLConnection) conn;
 
-                            if (httpConn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-                                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
-                                String result;
+                                httpConn.setRequestMethod(requestType.toString());
 
-                                while (true) {
-                                    result = bufferedReader.readLine();
+                                if (httpConn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
+                                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
+                                    String result;
 
-                                    if (result == null) {
-                                        break;
+                                    while (true) {
+                                        result = bufferedReader.readLine();
+
+                                        if (result == null) {
+                                            break;
+                                        }
+                                        stringBuilder.append(result).append("\n");
                                     }
-                                    stringBuilder.append(result + "\n");
+                                    bufferedReader.close();
+                                    httpConn.disconnect();
+                                } else {
+                                    throw GException.makeGException(GException.ErrorType.RESPONSE_CODE_ERROR);
                                 }
-                                bufferedReader.close();
-                                httpConn.disconnect();
-                            } else {
-                                throw GException.makeGException(GException.ErrorType.RESPONSE_CODE_ERROR);
-                            }
 
-                        } else if (checkScheme(urlStr).equals(SchemeType.HTTPS)) {
-                            HttpsURLConnection httpsConn = (HttpsURLConnection) conn;
+                            } else if (schemeType.equals(SchemeType.HTTPS)) {
+                                HttpsURLConnection httpsConn = (HttpsURLConnection) conn;
 
-                            httpsConn.setRequestMethod(requestType.toString());
+                                httpsConn.setRequestMethod(requestType.toString());
 
-                            if (httpsConn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-                                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpsConn.getInputStream()));
-                                String result;
+                                if (httpsConn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
+                                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpsConn.getInputStream()));
+                                    String result;
 
-                                while (true) {
-                                    result = bufferedReader.readLine();
+                                    while (true) {
+                                        result = bufferedReader.readLine();
 
-                                    if (result == null) {
-                                        break;
+                                        if (result == null) {
+                                            break;
+                                        }
+                                        stringBuilder.append(result).append("\n");
                                     }
-                                    stringBuilder.append(result + "\n");
+                                    bufferedReader.close();
+                                    httpsConn.disconnect();
+                                } else {
+                                    throw GException.makeGException(GException.ErrorType.RESPONSE_CODE_ERROR);
                                 }
-                                bufferedReader.close();
-                                httpsConn.disconnect();
                             } else {
-                                throw GException.makeGException(GException.ErrorType.RESPONSE_CODE_ERROR);
+                                throw GException.makeGException(GException.ErrorType.SCHEME_NOT_SUPPORTED);
                             }
-
-                        } else {    // If the connection type is neither http nor https.
+                        } else {
                             throw GException.makeGException(GException.ErrorType.SCHEME_NOT_SUPPORTED);
                         }
                     } else {
@@ -189,7 +194,7 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
 
         stringBuilder.append("?");
         for (String key : params.keySet()) {
-            stringBuilder.append(key + "=" + params.get(key) + "&");
+            stringBuilder.append(key).append("=").append(params.get(key)).append("&");
         }
         stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length());
 

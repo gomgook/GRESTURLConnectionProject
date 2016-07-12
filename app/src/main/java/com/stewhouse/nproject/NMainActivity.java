@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
@@ -56,7 +57,9 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
                 @Override
                 public void onClick(View v) {
-                    editText.setText("");
+                    if (editText != null) {
+                        editText.setText("");
+                    }
                 }
             });
         }
@@ -71,9 +74,13 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     if (s.length() > 0) {
-                        deleteBtn.setVisibility(View.VISIBLE);
+                        if (deleteBtn != null) {
+                            deleteBtn.setVisibility(View.VISIBLE);
+                        }
                     } else {
-                        deleteBtn.setVisibility(View.GONE);
+                        if (deleteBtn != null) {
+                            deleteBtn.setVisibility(View.GONE);
+                        }
                     }
                 }
 
@@ -106,15 +113,22 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         });
         mSwipeRefreshLayout.setListView((ListView) findViewById(R.id.view_list));
         mSwipeRefreshLayout.setAdapter(new NBaseAdapter(this));
-        mSwipeRefreshLayout.setFooterLoadingView(getLayoutInflater().inflate(R.layout.view_listview_footer, null));
         mSwipeRefreshLayout.getListView().setOnScrollListener(this);
         mSwipeRefreshLayout.getListView().setDivider(null);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.view_listview_footer, null);
+
+        if (view != null) {
+            mSwipeRefreshLayout.setFooterLoadingView(view);
+        }
+
 
         mPage = 1;
     }
 
     private void doSearch(boolean isDataAdd) {
-        if (isDataAdd == false) {
+        if (!isDataAdd) {
             mPage = 1;
         } else {
             mPage++;
@@ -146,23 +160,22 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                 if (result instanceof String) {
                     JSONObject jsonObject = new JSONObject(result.toString());
 
-                    if (jsonObject != null) {
-                        if (jsonObject.has(Channel.JSON_PARAM_ROOT) == true) {
-                            Channel channel = Channel.parseJSONObject(jsonObject.getJSONObject(Channel.JSON_PARAM_ROOT));
+                    if (jsonObject.has(Channel.JSON_PARAM_ROOT)) {
+                        Channel channel = Channel.parseJSONObject(jsonObject.getJSONObject(Channel.JSON_PARAM_ROOT));
 
-                            if (channel != null) {
-                                if (channel.getTotalCount() > -1) {
-                                    mTotalCount = channel.getTotalCount();
+                        if (channel != null) {
+                            if (channel.getTotalCount() > -1) {
+                                mTotalCount = channel.getTotalCount();
 
-                                    if (channel.getItems() != null) {
-                                        ArrayList<Item> data = channel.getItems();
+                                if (channel.getItems() != null) {
+                                    ArrayList<Item> data = channel.getItems();
 
-                                        setListView(data, mPage > 1);
-                                        checkCanLoadExtra();
-                                    }
+                                    setListView(data, mPage > 1);
+                                    checkCanLoadExtra();
                                 }
                             }
                         }
+
                     }
                 } else {
 
@@ -181,7 +194,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         ArrayList<Item> listData;
         NBaseAdapter listAdapter = mSwipeRefreshLayout.getAdapter();
 
-        if (isDataAdd == true) {
+        if (isDataAdd) {
             listData = listAdapter.getData();
             listData.addAll(data);
         } else {
@@ -193,11 +206,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     }
 
     private void checkCanLoadExtra() {
-        if (NConstants.LIST_EXTRA_LOADING_PRE_COUNT * mPage < mTotalCount && mPage < NConstants.API_PAGE_LIMIT) {
-            mCanLoadExtra = true;
-        } else {
-            mCanLoadExtra = false;
-        }
+        mCanLoadExtra = NConstants.LIST_EXTRA_LOADING_PRE_COUNT * mPage < mTotalCount && mPage < NConstants.API_PAGE_LIMIT;
     }
 
     @Override
@@ -214,7 +223,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         if (firstVisibleItem + visibleItemCount > totalItemCount - NConstants.LIST_EXTRA_LOADING_PRE_COUNT) {
-            if (mCanLoadExtra == true) {
+            if (mCanLoadExtra) {
                 mCanLoadExtra = false;
                 doSearch(true);
             }
