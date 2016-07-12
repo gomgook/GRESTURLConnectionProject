@@ -41,9 +41,11 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                 loadData();
             }
         });
-        mListView = (ListView) findViewById(R.id.view_list);
+        mSwipeRefreshLayout.setListView((ListView) findViewById(R.id.view_list));
+        mSwipeRefreshLayout.setAdapter(new NBaseAdapter(this));
+        mListView = mSwipeRefreshLayout.getListView();
         mListView.setOnScrollListener(this);
-        mListAdapter = new NBaseAdapter(this);
+        mListAdapter = mSwipeRefreshLayout.getAdapter();
         mPage = 1;
 
         loadData();
