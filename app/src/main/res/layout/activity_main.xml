@@ -31,10 +31,13 @@
             android:layout_marginLeft="20dp"
             android:background="@android:color/transparent"
             android:lines="1"
+            android:singleLine="true"
             android:textSize="16dp"
             android:textColor="@color/bg_search_cell_text"
             android:textColorHint="@color/bg_search_cell_hint_text"
-            android:hint="@string/search_hint"/>
+            android:hint="@string/search_hint"
+            android:imeOptions="actionSearch"
+            android:inputType="text" />
 
         <View
             android:layout_width="match_parent"
