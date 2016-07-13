@@ -16,14 +16,14 @@ import java.util.ArrayList;
 /**
  * Created by Gomguk on 16. 7. 11..
  */
-public class NBaseAdapter extends BaseAdapter {
+public class NBaseResultAdapter extends BaseAdapter {
 
     private Context mContext = null;
     private ArrayList<Item> mData = null;
 
     private String mSearchKeyword = null;
 
-    public NBaseAdapter(Context context) {
+    public NBaseResultAdapter(Context context) {
         mContext = context;
     }
 

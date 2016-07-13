@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ListView;
 
-import com.stewhouse.nproject.NBaseAdapter;
+import com.stewhouse.nproject.NBaseResultAdapter;
 
 /**
  * Created by Gomguk on 2016-07-11.
@@ -14,7 +14,7 @@ import com.stewhouse.nproject.NBaseAdapter;
 public class GSwipeRefreshLayout extends SwipeRefreshLayout {
 
     private ListView mListView = null;
-    private NBaseAdapter mListAdapter = null;
+    private NBaseResultAdapter mListAdapter = null;
 
     private View mFooterLoadingView = null;
 
@@ -30,11 +30,11 @@ public class GSwipeRefreshLayout extends SwipeRefreshLayout {
         mListView = listView;
     }
 
-    public NBaseAdapter getAdapter() {
+    public NBaseResultAdapter getAdapter() {
         return mListAdapter;
     }
 
-    public void setAdapter(NBaseAdapter adapter) {
+    public void setAdapter(NBaseResultAdapter adapter) {
         mListAdapter = adapter;
     }
 
