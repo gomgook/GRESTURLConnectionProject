@@ -11,4 +11,6 @@ public class NConstants {
     public static final int LIST_EXTRA_LOADING_PRE_COUNT = 20;
 
     public static final int CONNECTION_TIMEOUT = 3000;
+
+    public static final int SEARCH_KEYWORD_LIMIT = 20;
 }

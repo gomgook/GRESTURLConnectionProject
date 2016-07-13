@@ -1,5 +1,6 @@
 package com.stewhouse.nproject;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -37,7 +38,9 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     private static final String API_URL = "https://apis.daum.net/search/book";
 
     private String mSearchKeyword = null;
+    private NSQLiteOpenHelper mSQLiteOpenHelper = null;
 
+    private ListView mSearchListView = null;
     private GSwipeRefreshLayout mSwipeRefreshLayout = null;
 
     private int mPage = -1;
@@ -98,10 +101,16 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                         mSwipeRefreshLayout.getAdapter().setSearchKeyword(mSearchKeyword);
                         doSearch(false);
                     }
+
                     return false;
                 }
             });
         }
+
+        mSQLiteOpenHelper = new NSQLiteOpenHelper(this);
+        mSearchListView = (ListView) findViewById(R.id.view_search_list);
+        mSearchListView.setDivider(null);
+        setSearchListView();
 
         // Set SwipeRefreshLayout.
         mSwipeRefreshLayout = (GSwipeRefreshLayout) findViewById(R.id.layout_swiperefresh);
@@ -113,7 +122,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
             }
         });
         mSwipeRefreshLayout.setListView((ListView) findViewById(R.id.view_list));
-        mSwipeRefreshLayout.setAdapter(new NBaseAdapter(this));
+        mSwipeRefreshLayout.setAdapter(new NBaseResultAdapter(this));
         mSwipeRefreshLayout.getListView().setOnScrollListener(this);
         mSwipeRefreshLayout.getListView().setDivider(null);
 
@@ -128,6 +137,9 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     }
 
     private void doSearch(boolean isDataAdd) {
+        SQLiteDatabase db = mSQLiteOpenHelper.getWritableDatabase();
+        mSQLiteOpenHelper.insertKeyword(db, mSearchKeyword);
+
         if (!isDataAdd) {
             mPage = 1;
         } else {
@@ -201,9 +213,19 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         }
     }
 
+    private void setSearchListView() {
+        ArrayList<String> data = mSQLiteOpenHelper.getKeywords(mSQLiteOpenHelper.getReadableDatabase());
+        NBaseSearchAdapter listAdapter = new NBaseSearchAdapter(this);
+
+        if (data != null) {
+            listAdapter.setData(data);
+            mSearchListView.setAdapter(listAdapter);
+        }
+    }
+
     private void setListView(ArrayList<Item> data, boolean isDataAdd) {
         ArrayList<Item> listData;
-        NBaseAdapter listAdapter = mSwipeRefreshLayout.getAdapter();
+        NBaseResultAdapter listAdapter = mSwipeRefreshLayout.getAdapter();
 
         if (isDataAdd) {
             listData = listAdapter.getData();
@@ -222,7 +244,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-        NBaseAdapter listAdapter = mSwipeRefreshLayout.getAdapter();
+        NBaseResultAdapter listAdapter = mSwipeRefreshLayout.getAdapter();
 
         if (listAdapter != null) {
             if (AbsListView.OnScrollListener.SCROLL_STATE_IDLE == scrollState) {
