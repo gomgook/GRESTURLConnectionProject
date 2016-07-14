@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.stewhouse.gresturlconnection.GRESTURLConnection;
@@ -40,6 +42,8 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     private String mSearchKeyword = null;
     private NSQLiteOpenHelper mSQLiteOpenHelper = null;
 
+    private RelativeLayout mSearchLayout = null;
+    private RelativeLayout mSearchDeleteBtn = null;
     private ListView mSearchListView = null;
     private GSwipeRefreshLayout mSwipeRefreshLayout = null;
 
@@ -109,6 +113,24 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         }
 
         mSQLiteOpenHelper = new NSQLiteOpenHelper(this);
+        mSearchLayout = (RelativeLayout) findViewById(R.id.layout_search_list);
+        mSearchDeleteBtn = (RelativeLayout) findViewById(R.id.btn_search_delete_all);
+        mSearchDeleteBtn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                NSQLiteOpenHelper nsqLiteOpenHelper = new NSQLiteOpenHelper(NMainActivity.this);
+                nsqLiteOpenHelper.deleteAllKeywords(nsqLiteOpenHelper.getWritableDatabase());
+                NBaseSearchAdapter searchAdapter = (NBaseSearchAdapter) mSearchListView.getAdapter();
+                searchAdapter.setData(nsqLiteOpenHelper.getKeywords(nsqLiteOpenHelper.getReadableDatabase()));
+            }
+        });
+        TextView deleteBtnText = (TextView) findViewById(R.id.text_search_delete_all);
+        if (deleteBtnText != null) {
+            String str = "검색기록 <font color=\"#fa2828\">삭제</font>";
+
+            deleteBtnText.setText(Html.fromHtml(str));
+        }
         mSearchListView = (ListView) findViewById(R.id.view_search_list);
         mSearchListView.setDivider(null);
         setSearchListView();
@@ -248,8 +270,8 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     }
 
     private void setListViewsVisibility() {
-        if (mSearchListView.getVisibility() == View.VISIBLE) {
-            mSearchListView.setVisibility(View.GONE);
+        if (mSearchLayout.getVisibility() == View.VISIBLE) {
+            mSearchLayout.setVisibility(View.GONE);
             mSwipeRefreshLayout.setVisibility(View.VISIBLE);
         }
     }

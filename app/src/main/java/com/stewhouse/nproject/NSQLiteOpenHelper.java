@@ -105,6 +105,12 @@ public class NSQLiteOpenHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
+    public void deleteAllKeywords(SQLiteDatabase db) {
+        String query = "delete from keywords";
+
+        db.execSQL(query);
+    }
+
     public void updateKeyword(SQLiteDatabase db, String keyword) {
         String query = "update keywords set timestamp = current_timestamp where keyword = '" + keyword + "'";
 
