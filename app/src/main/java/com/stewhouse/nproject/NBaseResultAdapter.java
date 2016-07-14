@@ -1,7 +1,6 @@
 package com.stewhouse.nproject;
 
 import android.content.Context;
-import android.os.Build;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,19 +77,11 @@ public class NBaseResultAdapter extends BaseAdapter {
         if (item != null) {
             if (item.getTitle() != null) {
                 String htmlStr = item.getTitle();
-                htmlStr = htmlStr.replace(mSearchKeyword, "<font color=\"" + getColor(mContext, R.color.view_listview_cell_title_highlight) + "\">" + mSearchKeyword + "</font>");
+                htmlStr = htmlStr.replace(mSearchKeyword, "<font color=\"" + GUtil.getColor(mContext, R.color.view_listview_cell_title_highlight) + "\">" + mSearchKeyword + "</font>");
 
                 holder.title_text.setText(Html.fromHtml(htmlStr));
             }
         }
         return convertView;
-    }
-
-    private int getColor(Context context, int id) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return context.getColor(id);
-        } else {
-            return context.getResources().getColor(id);
-        }
     }
 }
