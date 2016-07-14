@@ -1,6 +1,5 @@
 package com.stewhouse.nproject;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -81,12 +80,10 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (s.length() > 0) {
-                        if (deleteBtn != null) {
+                    if (deleteBtn != null) {
+                        if (s.length() > 0) {
                             deleteBtn.setVisibility(View.VISIBLE);
-                        }
-                    } else {
-                        if (deleteBtn != null) {
+                        } else {
                             deleteBtn.setVisibility(View.GONE);
                         }
                     }
@@ -111,24 +108,27 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
             });
         }
 
-        mSQLiteOpenHelper = new NSQLiteOpenHelper(this);
+        mSQLiteOpenHelper = NSQLiteOpenHelper.getInstance(this);
         mSearchLayout = (RelativeLayout) findViewById(R.id.layout_search_list);
         RelativeLayout searchDeleteBtn = (RelativeLayout) findViewById(R.id.btn_search_delete_all);
+
         if (searchDeleteBtn != null) {
             searchDeleteBtn.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
-                    NSQLiteOpenHelper nsqLiteOpenHelper = new NSQLiteOpenHelper(NMainActivity.this);
-                    nsqLiteOpenHelper.deleteAllKeywords(nsqLiteOpenHelper.getWritableDatabase());
+                    NSQLiteOpenHelper nsqLiteOpenHelper = NSQLiteOpenHelper.getInstance(NMainActivity.this);
                     NBaseSearchAdapter searchAdapter = (NBaseSearchAdapter) mSearchListView.getAdapter();
+
+                    nsqLiteOpenHelper.deleteAllKeywords(nsqLiteOpenHelper.getWritableDatabase());
                     searchAdapter.setData(nsqLiteOpenHelper.getKeywords(nsqLiteOpenHelper.getReadableDatabase()));
                 }
             });
         }
         TextView deleteBtnText = (TextView) findViewById(R.id.text_search_delete_all);
+
         if (deleteBtnText != null) {
-            String str = "검색기록 <font color=\"#fa2828\">삭제</font>";
+            String str = "검색기록 <font color=\"" + GUtil.getColor(this, R.color.bg_search_delete_all_cell_highlight) + "\">삭제</font>";
 
             deleteBtnText.setText(Html.fromHtml(str));
         }
@@ -167,8 +167,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
             mIsSearchStarted = true;
         }
         setListViewsVisibility();
-        SQLiteDatabase db = mSQLiteOpenHelper.getWritableDatabase();
-        mSQLiteOpenHelper.insertKeyword(db, mSearchKeyword);
+        mSQLiteOpenHelper.insertKeyword(mSQLiteOpenHelper.getWritableDatabase(), mSearchKeyword);
 
         if (!isDataAdd) {
             mPage = 1;
@@ -182,8 +181,9 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         mSwipeRefreshLayout.addLoadingFooter();
 
         GRESTURLConnection connection = new GRESTURLConnection();
-        connection.setListener(this);
         HashMap<String, String> params = new HashMap<>();
+
+        connection.setListener(this);
 
         params.put(API_PARAM_APIKEY, NConstants.API_KEY);
         params.put(API_PARAM_KEYWORD, mSearchKeyword);
@@ -203,7 +203,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                     JSONObject jsonObject = new JSONObject(result.toString());
 
                     if (jsonObject.has(Channel.JSON_PARAM_ROOT)) {
-                        Channel channel = Channel.parseJSONObject(jsonObject.getJSONObject(Channel.JSON_PARAM_ROOT));
+                        Channel channel = Channel.parse(jsonObject.getJSONObject(Channel.JSON_PARAM_ROOT));
 
                         if (channel != null) {
                             if (channel.getTotalCount() > -1) {
@@ -263,6 +263,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         } else {
             listData = data;
         }
+
         listAdapter.setData(listData);
         mSwipeRefreshLayout.getListView().setAdapter(listAdapter);
         mSwipeRefreshLayout.setRefreshing(false);
@@ -273,7 +274,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     }
 
     private void setListViewsVisibility() {
-        if (mSearchLayout.getVisibility() == View.VISIBLE) {
+        if (mSearchLayout.getVisibility() == View.VISIBLE && mSwipeRefreshLayout.getVisibility() == View.GONE) {
             mSearchLayout.setVisibility(View.GONE);
             mSwipeRefreshLayout.setVisibility(View.VISIBLE);
         }

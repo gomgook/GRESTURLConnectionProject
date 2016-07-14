@@ -12,13 +12,23 @@ import java.util.ArrayList;
  */
 public class NSQLiteOpenHelper extends SQLiteOpenHelper {
 
+    private static NSQLiteOpenHelper mInstance = null;
+
     // If you change the database schema, you must increment the database version.
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "NDB.db";
 
     private static final String QUERY_CREATE_TABLE = "create table keywords ( id integer primary key autoincrement, keyword varchar(255) not null, timestamp timestamp not null )";
 
-    public NSQLiteOpenHelper(Context context) {
+    public static NSQLiteOpenHelper getInstance(Context context) {
+        if (mInstance == null) {
+            return new NSQLiteOpenHelper(context);
+        }
+
+        return mInstance;
+    }
+
+    private NSQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

@@ -71,7 +71,7 @@ public class NBaseSearchAdapter extends BaseAdapter {
 
             @Override
             public void onClick(View v) {
-                NSQLiteOpenHelper nsqLiteOpenHelper = new NSQLiteOpenHelper(mContext);
+                NSQLiteOpenHelper nsqLiteOpenHelper = NSQLiteOpenHelper.getInstance(mContext);
 
                 nsqLiteOpenHelper.deleteKeyword(nsqLiteOpenHelper.getWritableDatabase(), keyword);
                 setData(nsqLiteOpenHelper.getKeywords(nsqLiteOpenHelper.getReadableDatabase()));
