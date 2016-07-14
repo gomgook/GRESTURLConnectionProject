@@ -46,6 +46,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     private int mPage = -1;
     private int mTotalCount = -1;
     private boolean mCanLoadExtra = false;
+    private boolean mIsSearchStarted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +138,10 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     }
 
     private void doSearch(boolean isDataAdd) {
+        if (mIsSearchStarted == false) {
+            mIsSearchStarted = true;
+        }
+        setListViewsVisibility();
         SQLiteDatabase db = mSQLiteOpenHelper.getWritableDatabase();
         mSQLiteOpenHelper.insertKeyword(db, mSearchKeyword);
 
@@ -240,6 +245,13 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
     private void checkCanLoadExtra() {
         mCanLoadExtra = NConstants.LIST_EXTRA_LOADING_PRE_COUNT * mPage < mTotalCount && mPage < NConstants.API_PAGE_LIMIT;
+    }
+
+    private void setListViewsVisibility() {
+        if (mSearchListView.getVisibility() == View.VISIBLE) {
+            mSearchListView.setVisibility(View.GONE);
+            mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

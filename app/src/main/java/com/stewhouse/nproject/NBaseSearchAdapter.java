@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class NBaseSearchAdapter extends BaseAdapter {
 
     class ViewHolder {
         TextView title_text = null;
+        ImageView btn_delete = null;
     }
 
     @Override
@@ -53,17 +55,28 @@ public class NBaseSearchAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.view_listview_keyword_cell, parent, false);
             holder = new ViewHolder();
             holder.title_text = (TextView) convertView.findViewById(R.id.title_text);
+            holder.btn_delete = (ImageView) convertView.findViewById(R.id.btn_delete);
 
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        String keyword = (String) getItem(position);
+        final String keyword = (String) getItem(position);
 
         if (keyword != null) {
             holder.title_text.setText(keyword);
         }
+        holder.btn_delete.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                NSQLiteOpenHelper nsqLiteOpenHelper = new NSQLiteOpenHelper(mContext);
+
+                nsqLiteOpenHelper.deleteKeyword(nsqLiteOpenHelper.getWritableDatabase(), keyword);
+                setData(nsqLiteOpenHelper.getKeywords(nsqLiteOpenHelper.getReadableDatabase()));
+            }
+        });
 
         return convertView;
     }
