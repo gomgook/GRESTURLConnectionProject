@@ -1,4 +1,4 @@
-package com.stewhouse.nproject;
+package com.stewhouse.nproject.util;
 
 import android.content.Context;
 import android.os.Build;
