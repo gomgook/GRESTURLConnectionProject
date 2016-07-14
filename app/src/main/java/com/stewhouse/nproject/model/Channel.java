@@ -29,13 +29,13 @@ public class Channel {
         Channel channel = new Channel();
 
         try {
-            if (jsonObject.has(JSON_PARAM_TOTAL_COUNT) == true) {
+            if (jsonObject.has(JSON_PARAM_TOTAL_COUNT)) {
                 String totalCountStr = (String) jsonObject.get(JSON_PARAM_TOTAL_COUNT);
                 if (totalCountStr != null) {
                     channel.mTotalCount = (Integer.parseInt(totalCountStr));
                 }
             }
-            if (jsonObject.has(JSON_PARAM_ITEM) == true) {
+            if (jsonObject.has(JSON_PARAM_ITEM)) {
                 JSONArray items = jsonObject.getJSONArray(Item.JSON_PARAM_ROOT);
                 if (items != null) {
                     channel.mItems = new ArrayList<Item>();

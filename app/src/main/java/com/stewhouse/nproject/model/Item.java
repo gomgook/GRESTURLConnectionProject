@@ -20,7 +20,7 @@ public class Item {
         Item item = new Item();
 
         try {
-            if (jsonObject.has(JSON_PARAM_TITLE) == true) {
+            if (jsonObject.has(JSON_PARAM_TITLE)) {
                 String titleStr = (String) jsonObject.get(JSON_PARAM_TITLE);
                 if (titleStr != null) {
                     item.mTitle = titleStr;
