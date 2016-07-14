@@ -1,4 +1,4 @@
-package com.stewhouse.nproject.widget;
+package com.stewhouse.nproject.util;
 
 import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout;
