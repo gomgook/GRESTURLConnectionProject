@@ -12,7 +12,6 @@
         android:layout_marginRight="20dp"
         android:layout_centerVertical="true"
         android:lines="1"
-        android:text="발명왕 에디슨"
         android:textSize="16dp"
         android:textColor="@color/text_listview_cell_title" />
 
