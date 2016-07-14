@@ -64,6 +64,7 @@ public class NSQLiteOpenHelper extends SQLiteOpenHelper {
         while (cursor.moveToNext()) {
             row.add(cursor.getString(1));
         }
+        cursor.close();
 
         return row;
     }
@@ -76,6 +77,7 @@ public class NSQLiteOpenHelper extends SQLiteOpenHelper {
         if (cursor.moveToNext()) {
             count = Integer.parseInt(cursor.getString(0));
         }
+        cursor.close();
 
         return count;
     }
@@ -90,6 +92,8 @@ public class NSQLiteOpenHelper extends SQLiteOpenHelper {
                 return true;
             }
         }
+        cursor.close();
+
         return false;
     }
 
