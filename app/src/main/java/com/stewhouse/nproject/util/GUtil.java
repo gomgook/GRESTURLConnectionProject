@@ -8,6 +8,7 @@ import android.os.Build;
  */
 public class GUtil {
 
+    @SuppressWarnings("deprecation")
     public static int getColor(Context context, int id) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return context.getColor(id);
