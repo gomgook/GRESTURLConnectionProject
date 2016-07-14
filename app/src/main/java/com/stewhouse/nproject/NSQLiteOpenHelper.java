@@ -96,6 +96,7 @@ public class NSQLiteOpenHelper extends SQLiteOpenHelper {
         String query = "select count(*) from keywords where keyword = '" + keyword + "'";
 
         Cursor cursor = db.rawQuery(query, null);
+
         if (cursor.moveToNext()) {
             int count = Integer.parseInt(cursor.getString(0));
             if (count > 0) {
