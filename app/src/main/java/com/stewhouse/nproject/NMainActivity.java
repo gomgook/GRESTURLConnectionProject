@@ -136,8 +136,8 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         mSearchListView = (ListView) findViewById(R.id.view_search_list);
         if (mSearchListView != null) {
             mSearchListView.setDivider(null);
+            setSearchListView();
         }
-        setSearchListView();
 
         // Set SwipeRefreshLayout.
         mSwipeRefreshLayout = (GSwipeRefreshLayout) findViewById(R.id.layout_swiperefresh);
@@ -163,11 +163,31 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         mPage = 1;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mIsSearchStarted) {
+            setListViewsVisibility(true);
+        } else {
+            setListViewsVisibility(false);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mIsSearchStarted) {
+            mIsSearchStarted = false;
+        }
+    }
+
     private void doSearch(boolean isDataAdd) {
         if (!mIsSearchStarted) {
             mIsSearchStarted = true;
         }
-        setListViewsVisibility();
+        setListViewsVisibility(true);
         mSQLiteOpenHelper.insertKeyword(mSQLiteOpenHelper.getWritableDatabase(), mSearchKeyword);
 
         if (!isDataAdd) {
@@ -246,11 +266,17 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
     private void setSearchListView() {
         ArrayList<String> data = mSQLiteOpenHelper.getKeywords(mSQLiteOpenHelper.getReadableDatabase());
-        NBaseSearchAdapter listAdapter = new NBaseSearchAdapter(this);
+        NBaseSearchAdapter listAdapter;
 
         if (data != null) {
-            listAdapter.setData(data);
-            mSearchListView.setAdapter(listAdapter);
+            if (mSearchListView.getAdapter() == null) {
+                listAdapter = new NBaseSearchAdapter(this);
+                listAdapter.setData(data);
+                mSearchListView.setAdapter(listAdapter);
+            } else {
+                listAdapter = (NBaseSearchAdapter) mSearchListView.getAdapter();
+                listAdapter.setData(data);
+            }
         }
     }
 
@@ -274,10 +300,18 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         mCanLoadExtra = NConstants.LIST_EXTRA_LOADING_PRE_COUNT * mPage < mTotalCount && mPage < NConstants.API_PAGE_LIMIT;
     }
 
-    private void setListViewsVisibility() {
-        if (mSearchLayout.getVisibility() == View.VISIBLE && mSwipeRefreshLayout.getVisibility() == View.GONE) {
-            mSearchLayout.setVisibility(View.GONE);
-            mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+    private void setListViewsVisibility(boolean showSwipeLayout) {
+        if (showSwipeLayout) {
+            if (mSearchLayout.getVisibility() == View.VISIBLE && mSwipeRefreshLayout.getVisibility() == View.GONE) {
+                mSearchLayout.setVisibility(View.GONE);
+                mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (mSwipeRefreshLayout.getVisibility() == View.VISIBLE && mSearchLayout.getVisibility() == View.GONE) {
+                setSearchListView();
+                mSearchLayout.setVisibility(View.VISIBLE);
+                mSwipeRefreshLayout.setVisibility(View.GONE);
+            }
         }
     }
 
