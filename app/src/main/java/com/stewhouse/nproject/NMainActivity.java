@@ -26,6 +26,8 @@ import com.stewhouse.nproject.util.GUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -207,7 +209,11 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         connection.setListener(this);
 
         params.put(API_PARAM_APIKEY, NConstants.API_KEY);
-        params.put(API_PARAM_KEYWORD, mSearchKeyword);
+        try {
+            params.put(API_PARAM_KEYWORD, URLEncoder.encode(mSearchKeyword, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         params.put(API_PARAM_OUTPUT, "json");
         params.put(API_PARAM_PAGENO, String.valueOf(mPage));
         params.put(API_PARAM_RESULT, String.valueOf(NConstants.LIST_EXTRA_LOADING_PRE_COUNT));
