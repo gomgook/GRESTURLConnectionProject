@@ -88,7 +88,7 @@ public class ExampleUnitTest implements GRESTURLConnection.GRESTURLConnectionLis
     }
 
     @Override
-    public void onPostExecute(Object result) {
-        Log.e("TEST RESULT", "" + result.toString());
+    public void onPostExecute(String result) {
+        Log.e("TEST RESULT", "" + result);
     }
 }
