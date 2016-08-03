@@ -15,10 +15,10 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * Created by Gomguk on 16. 7. 8..
  */
-public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
+public class GRESTURLConnection extends AsyncTask<HashMap, Object, String> {
 
     public interface GRESTURLConnectionListener {
-        void onPostExecute(Object result);
+        void onPostExecute(String result);
     }
 
     private final static String CONNECTION_PARAM_URL = "url";
@@ -58,7 +58,7 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
     }
 
     @Override
-    protected Object doInBackground(HashMap... params) {
+    protected String doInBackground(HashMap... params) {
         try {
             if (mListener != null) {
                 HashMap<String, Object> requestParams = (HashMap<String, Object>) params[0];
@@ -173,10 +173,10 @@ public class GRESTURLConnection extends AsyncTask<HashMap, Object, Object> {
     }
 
     @Override
-    protected void onPostExecute(Object o) {
-        super.onPostExecute(o);
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
 
-        mListener.onPostExecute(o);
+        mListener.onPostExecute(result);
     }
 
     private SchemeType checkScheme(String url) {

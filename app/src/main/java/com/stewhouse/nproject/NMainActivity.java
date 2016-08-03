@@ -221,49 +221,36 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     }
 
     @Override
-    public void onPostExecute(Object result) {
+    public void onPostExecute(String result) {
         mSwipeRefreshLayout.removeLoadingFooter();
 
+        if (result == null) {
+            return;
+        }
+
         try {
-            if (result != null) {
-                if (result instanceof String) {
-                    JSONObject jsonObject = new JSONObject(result.toString());
+            JSONObject jsonObject = new JSONObject(result.toString());
 
-                    if (jsonObject.has(Channel.JSON_PARAM_ROOT)) {
-                        Channel channel = Channel.parse(jsonObject.getJSONObject(Channel.JSON_PARAM_ROOT));
+            if (jsonObject.has(Channel.JSON_PARAM_ROOT) == false) {
+                return;
+            }
 
-                        if (channel != null) {
-                            if (channel.getTotalCount() > -1) {
-                                mTotalCount = channel.getTotalCount();
+            Channel channel = Channel.parse(jsonObject.getJSONObject(Channel.JSON_PARAM_ROOT));
 
-                                if (channel.getItems() != null) {
-                                    ArrayList<Item> data = channel.getItems();
+            if (channel != null) {
+                if (channel.getTotalCount() > -1) {
+                    mTotalCount = channel.getTotalCount();
+                    ArrayList<Item> data = channel.getItems();
 
-                                    setListView(data, mPage > 1);
-                                    checkCanLoadExtra();
-                                } else {
-
-                                    // TODO: Handle when Item list is null.
-                                }
-                            } else {
-
-                                // TODO: Handle when totalCount is invalid value.
-                            }
-                        } else {
-
-                            // TODO: Handle when the Channel model is null.
-                        }
-                    } else {
-
-                        // TODO: Handle when the result doesn't have ROOT JSON parameter.
-                    }
+                    setListView(data, mPage > 1);
+                    checkCanLoadExtra();
                 } else {
 
-                    // TODO: Handle when connection result is not String(Error case).
+                    // TODO: Handle when totalCount is invalid value.
                 }
             } else {
 
-                // TODO: Handle when connection result is null(Error case).
+                // TODO: Handle when the Channel model is null.
             }
         } catch (JSONException e) {
             e.printStackTrace();
