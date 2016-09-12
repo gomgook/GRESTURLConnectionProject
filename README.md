@@ -12,10 +12,10 @@ GRESTURLConnection is the REST API connection module library. It provides HTTP &
 
 GRESTURLConnection provides the functions below:
 
-1. HTTP & HTTPS connection
-2. Inputting REST API request types
-3. Setting connection parameters
-4. Setting connection timeout
-5. Setting connection headers
-6. Setting connection request bodies
-7. Getting connection result as String type to get all types of results
+- HTTP & HTTPS connection
+- Inputting REST API request types
+- Setting connection parameters
+- Setting connection timeout
+- Setting connection headers
+- Setting connection request bodies
+- Getting connection result as String type to get all types of results
