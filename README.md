@@ -1,6 +1,10 @@
-# Nproject
+# NProject
 
-Nproject is the test project to test a connection module which use REST API. Build.gradle which is dependent upon GRESTURLConnection module makes .lib file automatically and dependency of the file on app module to use this .lib file.
+NProject is a project searching book list. It saves the keywords which recently searched and provides function to manage the keywords list.
+
+NProject is the test project to test a connection module which use REST API. Build.gradle which is dependent upon GRESTURLConnection module makes .lib file automatically and dependency of the file on app module to use this .lib file.
+
+NProject also includes using ListView and Android DB managing. NBaseSearchAdapter and NBaseResultAdapter are the adapters of ListView in the main view. NSQLiteOpenHelper includes the functions which is related to DB managing.
 
 # GRESTURLConnection
 
