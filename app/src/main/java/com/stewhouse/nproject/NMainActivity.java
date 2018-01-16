@@ -60,8 +60,8 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         setContentView(R.layout.activity_main);
 
         // Set Search layout.
-        final ImageView deleteBtn = (ImageView) findViewById(R.id.btn_delete);
-        final EditText editText = (EditText) findViewById(R.id.edit_search);
+        final ImageView deleteBtn = findViewById(R.id.btn_delete);
+        final EditText editText = findViewById(R.id.edit_search);
         if (deleteBtn != null) {
             deleteBtn.setOnClickListener(new View.OnClickListener() {
 
@@ -112,8 +112,8 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         }
 
         mSQLiteOpenHelper = NSQLiteOpenHelper.getInstance(this);
-        mSearchLayout = (RelativeLayout) findViewById(R.id.layout_search_list);
-        RelativeLayout searchDeleteBtn = (RelativeLayout) findViewById(R.id.btn_search_delete_all);
+        mSearchLayout = findViewById(R.id.layout_search_list);
+        RelativeLayout searchDeleteBtn = findViewById(R.id.btn_search_delete_all);
 
         if (searchDeleteBtn != null) {
             searchDeleteBtn.setOnClickListener(new View.OnClickListener() {
@@ -128,21 +128,21 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                 }
             });
         }
-        TextView deleteBtnText = (TextView) findViewById(R.id.text_search_delete_all);
+        TextView deleteBtnText = findViewById(R.id.text_search_delete_all);
 
         if (deleteBtnText != null) {
             String str = "검색기록 <font color=\"" + GUtil.getColor(this, R.color.bg_search_delete_all_cell_highlight) + "\">삭제</font>";
 
             deleteBtnText.setText(Html.fromHtml(str));
         }
-        mSearchListView = (ListView) findViewById(R.id.view_search_list);
+        mSearchListView = findViewById(R.id.view_search_list);
         if (mSearchListView != null) {
             mSearchListView.setDivider(null);
             setSearchListView();
         }
 
         // Set SwipeRefreshLayout.
-        mSwipeRefreshLayout = (GSwipeRefreshLayout) findViewById(R.id.layout_swiperefresh);
+        mSwipeRefreshLayout = findViewById(R.id.layout_swiperefresh);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
             @Override

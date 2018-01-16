@@ -54,8 +54,8 @@ public class NBaseSearchAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.view_listview_keyword_cell, parent, false);
             holder = new ViewHolder();
-            holder.title_text = (TextView) convertView.findViewById(R.id.title_text);
-            holder.btn_delete = (ImageView) convertView.findViewById(R.id.btn_delete);
+            holder.title_text = convertView.findViewById(R.id.title_text);
+            holder.btn_delete = convertView.findViewById(R.id.btn_delete);
 
             convertView.setTag(holder);
         } else {
