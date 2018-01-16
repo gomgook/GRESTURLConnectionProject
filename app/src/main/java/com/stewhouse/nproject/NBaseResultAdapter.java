@@ -17,7 +17,6 @@ import java.util.ArrayList;
  * Created by Gomguk on 16. 7. 11..
  */
 public class NBaseResultAdapter extends BaseAdapter {
-
     private Context mContext = null;
     private ArrayList<Item> mData = null;
 

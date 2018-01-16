@@ -3,6 +3,8 @@ package com.stewhouse.nproject;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -32,7 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class NMainActivity extends AppCompatActivity implements GRESTURLConnection.GRESTURLConnectionListener, AbsListView.OnScrollListener {
-
     private static final String API_PARAM_APIKEY = "apikey";
     private static final String API_PARAM_KEYWORD = "q";
     private static final String API_PARAM_OUTPUT = "output";
@@ -62,6 +63,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         // Set Search layout.
         final ImageView deleteBtn = findViewById(R.id.btn_delete);
         final EditText editText = findViewById(R.id.edit_search);
+
         if (deleteBtn != null) {
             deleteBtn.setOnClickListener(new View.OnClickListener() {
 
@@ -131,13 +133,15 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         TextView deleteBtnText = findViewById(R.id.text_search_delete_all);
 
         if (deleteBtnText != null) {
-            String str = "검색기록 <font color=\"" + GUtil.getColor(this, R.color.bg_search_delete_all_cell_highlight) + "\">삭제</font>";
+            String str = "검색기록 <font color=\""
+                    + GUtil.getColor(this, R.color.bg_search_delete_all_cell_highlight)
+                    + "\">삭제</font>";
 
             deleteBtnText.setText(Html.fromHtml(str));
         }
         mSearchListView = findViewById(R.id.view_search_list);
         if (mSearchListView != null) {
-            mSearchListView.setDivider(null);
+//            mSearchListView.setDivider(null);
             setSearchListView();
         }
 
@@ -150,10 +154,11 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                 doSearch(false);
             }
         });
-        mSwipeRefreshLayout.setListView((ListView) findViewById(R.id.view_list));
-        mSwipeRefreshLayout.setAdapter(new NBaseResultAdapter(this));
-        mSwipeRefreshLayout.getListView().setOnScrollListener(this);
-        mSwipeRefreshLayout.getListView().setDivider(null);
+        mSwipeRefreshLayout.setListView((RecyclerView) findViewById(R.id.view_list));
+        mSwipeRefreshLayout.setAdapter(new NewNBaseResultAdapter());
+        mSwipeRefreshLayout.setLayoutManager(new LinearLayoutManager(this));
+//        mSwipeRefreshLayout.getListView().setOnScrollListener(this);
+//        mSwipeRefreshLayout.getListView().setDivider(null);
 
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.view_listview_footer, null);
@@ -275,7 +280,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
     private void setListView(ArrayList<Item> data, boolean isDataAdd) {
         ArrayList<Item> listData;
-        NBaseResultAdapter listAdapter = mSwipeRefreshLayout.getAdapter();
+        NewNBaseResultAdapter listAdapter = mSwipeRefreshLayout.getAdapter();
 
         if (isDataAdd) {
             listData = listAdapter.getData();
@@ -310,7 +315,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-        NBaseResultAdapter listAdapter = mSwipeRefreshLayout.getAdapter();
+        NewNBaseResultAdapter listAdapter = mSwipeRefreshLayout.getAdapter();
 
         if (listAdapter != null) {
             if (AbsListView.OnScrollListener.SCROLL_STATE_IDLE == scrollState) {
