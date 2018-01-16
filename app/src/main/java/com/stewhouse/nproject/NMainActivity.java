@@ -33,7 +33,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class NMainActivity extends AppCompatActivity implements GRESTURLConnection.GRESTURLConnectionListener, AbsListView.OnScrollListener {
+public class NMainActivity extends AppCompatActivity implements GRESTURLConnection.GRESTURLConnectionListener {
     private static final String API_PARAM_APIKEY = "apikey";
     private static final String API_PARAM_KEYWORD = "q";
     private static final String API_PARAM_OUTPUT = "output";
@@ -141,7 +141,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         }
         mSearchListView = findViewById(R.id.view_search_list);
         if (mSearchListView != null) {
-//            mSearchListView.setDivider(null);
+            mSearchListView.setDivider(null);
             setSearchListView();
         }
 
@@ -157,8 +157,32 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         mSwipeRefreshLayout.setListView((RecyclerView) findViewById(R.id.view_list));
         mSwipeRefreshLayout.setAdapter(new NewNBaseResultAdapter());
         mSwipeRefreshLayout.setLayoutManager(new LinearLayoutManager(this));
-//        mSwipeRefreshLayout.getListView().setOnScrollListener(this);
-//        mSwipeRefreshLayout.getListView().setDivider(null);
+        mSwipeRefreshLayout.getListView().addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) mSwipeRefreshLayout.getListView().getLayoutManager();
+
+                int visibleItemCount = layoutManager.getChildCount();
+                int totalItemCount = layoutManager.getItemCount();
+                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                        && firstVisibleItemPosition >= 0
+                        && totalItemCount >= NConstants.LIST_EXTRA_LOADING_PRE_COUNT + 1) {
+                    if (mCanLoadExtra) {
+                        mCanLoadExtra = false;
+                        doSearch(true);
+                    }
+                }
+            }
+        });
 
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.view_listview_footer, null);
@@ -309,27 +333,6 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                 setSearchListView();
                 mSearchLayout.setVisibility(View.VISIBLE);
                 mSwipeRefreshLayout.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-        NewNBaseResultAdapter listAdapter = mSwipeRefreshLayout.getAdapter();
-
-        if (listAdapter != null) {
-            if (AbsListView.OnScrollListener.SCROLL_STATE_IDLE == scrollState) {
-                listAdapter.notifyDataSetChanged();
-            }
-        }
-    }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        if (firstVisibleItem + visibleItemCount > totalItemCount - NConstants.LIST_EXTRA_LOADING_PRE_COUNT) {
-            if (mCanLoadExtra) {
-                mCanLoadExtra = false;
-                doSearch(true);
             }
         }
     }

@@ -16,7 +16,10 @@ import java.util.ArrayList;
  * Created by Alphys on 2018. 1. 16..
  */
 
-public class NewNBaseResultAdapter extends RecyclerView.Adapter<NewNBaseResultAdapter.ResultViewHolder> {
+public class NewNBaseResultAdapter extends RecyclerView.Adapter<NewNBaseResultAdapter.ViewHolder> {
+    private static int VIEW_TYPE_ROW = 1;
+    private static int VIEW_TYPE_LOADING_FOOTER = 2;
+
     private ArrayList<Item> mData = null;
 
     private String mSearchKeyword = null;
@@ -35,27 +38,41 @@ public class NewNBaseResultAdapter extends RecyclerView.Adapter<NewNBaseResultAd
     }
 
     @Override
-    public NewNBaseResultAdapter.ResultViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater
-                .from(parent.getContext())
-                .inflate(R.layout.view_listview_result_cell, parent, false);
+    public NewNBaseResultAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view;
 
-        return new ResultViewHolder(view, parent);
+        if (viewType == VIEW_TYPE_LOADING_FOOTER) {
+            view = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.view_listview_footer, parent, false);
+
+            return new FooterViewHolder(view);
+        } else {
+            view = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.view_listview_result_cell, parent, false);
+
+            return new ResultViewHolder(view, parent);
+        }
     }
 
     @Override
-    public void onBindViewHolder(NewNBaseResultAdapter.ResultViewHolder holder, int position) {
-        Item item = mData.get(position);
+    public void onBindViewHolder(NewNBaseResultAdapter.ViewHolder holder, int position) {
+        if (getItemViewType(position) == VIEW_TYPE_ROW) {
+            ResultViewHolder resultViewHolder = (ResultViewHolder) holder;
 
-        if (item != null) {
-            if (item.getTitle() != null) {
-                String htmlStr = item.getTitle();
-                htmlStr = htmlStr.replace(
-                        mSearchKeyword,
-                        "<font color=\"" + GUtil.getColor(holder.parentViewGroup.getContext(),
-                                R.color.view_listview_cell_title_highlight) + "\">" + mSearchKeyword + "</font>");
+            Item item = mData.get(position);
 
-                holder.title_text.setText(Html.fromHtml(htmlStr));
+            if (item != null) {
+                if (item.getTitle() != null) {
+                    String htmlStr = item.getTitle();
+                    htmlStr = htmlStr.replace(
+                            mSearchKeyword,
+                            "<font color=\"" + GUtil.getColor(resultViewHolder.parentViewGroup.getContext(),
+                                    R.color.view_listview_cell_title_highlight) + "\">" + mSearchKeyword + "</font>");
+
+                    resultViewHolder.title_text.setText(Html.fromHtml(htmlStr));
+                }
             }
         }
     }
@@ -64,10 +81,25 @@ public class NewNBaseResultAdapter extends RecyclerView.Adapter<NewNBaseResultAd
     public int getItemCount() {
         if (mData == null) return 0;
 
-        return mData.size();
+        return mData.size() + 1;
     }
 
-    public class ResultViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public int getItemViewType(int position) {
+        if (mData != null && position == mData.size()) {
+            return VIEW_TYPE_LOADING_FOOTER;
+        }
+
+        return VIEW_TYPE_ROW;
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        public ViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    public class ResultViewHolder extends ViewHolder {
         ViewGroup parentViewGroup = null;
         TextView title_text;
 
@@ -76,6 +108,12 @@ public class NewNBaseResultAdapter extends RecyclerView.Adapter<NewNBaseResultAd
 
             parentViewGroup = parent;
             title_text = itemView.findViewById(R.id.title_text);
+        }
+    }
+
+    public class FooterViewHolder extends ViewHolder {
+        public FooterViewHolder(View itemView) {
+            super(itemView);
         }
     }
 }
