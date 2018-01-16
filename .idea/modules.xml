@@ -4,8 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GRestURLConnection.iml" filepath="$PROJECT_DIR$/GRestURLConnection.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/gresturlconnection/gresturlconnection.iml" filepath="$PROJECT_DIR$/gresturlconnection/gresturlconnection.iml" />
       <module fileurl="file://$PROJECT_DIR$/gresturlconnection/gresturlconnection.iml" filepath="$PROJECT_DIR$/gresturlconnection/gresturlconnection.iml" />
     </modules>
   </component>
