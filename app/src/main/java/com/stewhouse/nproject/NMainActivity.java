@@ -12,7 +12,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -33,11 +32,12 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class NMainActivity extends AppCompatActivity implements GRESTURLConnection.GRESTURLConnectionListener {
-    private static final String API_PARAM_APIKEY = "apikey";
+public class NMainActivity extends AppCompatActivity
+        implements GRESTURLConnection.GRESTURLConnectionListener {
+    private static final String API_PARAM_API_KEY = "apikey";
     private static final String API_PARAM_KEYWORD = "q";
     private static final String API_PARAM_OUTPUT = "output";
-    private static final String API_PARAM_PAGENO = "pageno";
+    private static final String API_PARAM_PAGE_NO = "pageno";
     private static final String API_PARAM_RESULT = "result";
 
     private static final String API_URL = "https://apis.daum.net/search/book";
@@ -49,9 +49,14 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
     private ListView mSearchListView = null;
     private GSwipeRefreshLayout mSwipeRefreshLayout = null;
 
+    private NewNBaseResultAdapter mResultAdapter = null;
+
     private int mPage = -1;
     private int mTotalCount = -1;
     private boolean mCanLoadExtra = false;
+    private boolean mIsLoading = false;
+
+    // Flag to determine if search history list should be shown or not at first time.
     private boolean mIsSearchStarted = false;
 
     @Override
@@ -104,7 +109,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                         mSearchKeyword = v.getText().toString();
-                        mSwipeRefreshLayout.getAdapter().setSearchKeyword(mSearchKeyword);
+                        mResultAdapter.setSearchKeyword(mSearchKeyword);
                         doSearch(false);
                     }
 
@@ -145,6 +150,8 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
             setSearchListView();
         }
 
+        mResultAdapter = new NewNBaseResultAdapter();
+
         // Set SwipeRefreshLayout.
         mSwipeRefreshLayout = findViewById(R.id.layout_swiperefresh);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -155,9 +162,10 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
             }
         });
         mSwipeRefreshLayout.setListView((RecyclerView) findViewById(R.id.view_list));
-        mSwipeRefreshLayout.setAdapter(new NewNBaseResultAdapter());
+        mSwipeRefreshLayout.setAdapter(mResultAdapter);
         mSwipeRefreshLayout.setLayoutManager(new LinearLayoutManager(this));
         mSwipeRefreshLayout.getListView().addOnScrollListener(new RecyclerView.OnScrollListener() {
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -176,8 +184,7 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                 if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                         && firstVisibleItemPosition >= 0
                         && totalItemCount >= NConstants.LIST_EXTRA_LOADING_PRE_COUNT + 1) {
-                    if (mCanLoadExtra) {
-                        mCanLoadExtra = false;
+                    if (mCanLoadExtra && !mIsLoading) {
                         doSearch(true);
                     }
                 }
@@ -218,6 +225,9 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
         if (!mIsSearchStarted) {
             mIsSearchStarted = true;
         }
+
+        mIsLoading = true;
+
         setListViewsVisibility(true);
         mSQLiteOpenHelper.insertKeyword(mSQLiteOpenHelper.getWritableDatabase(), mSearchKeyword);
 
@@ -237,30 +247,37 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
         connection.setListener(this);
 
-        params.put(API_PARAM_APIKEY, NConstants.API_KEY);
+        params.put(API_PARAM_API_KEY, NConstants.API_KEY);
         try {
             params.put(API_PARAM_KEYWORD, URLEncoder.encode(mSearchKeyword, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         params.put(API_PARAM_OUTPUT, "json");
-        params.put(API_PARAM_PAGENO, String.valueOf(mPage));
+        params.put(API_PARAM_PAGE_NO, String.valueOf(mPage));
         params.put(API_PARAM_RESULT, String.valueOf(NConstants.LIST_EXTRA_LOADING_PRE_COUNT));
-        connection.execute(API_URL, params, NConstants.CONNECTION_TIMEOUT, GRESTURLConnection.RequestType.GET, null, null, null);
+        connection.execute(API_URL,
+                params,
+                NConstants.CONNECTION_TIMEOUT,
+                GRESTURLConnection.RequestType.GET,
+                null,
+                null,
+                null);
+
     }
 
     @Override
     public void onPostExecute(String result) {
-        mSwipeRefreshLayout.removeLoadingFooter();
+        mIsLoading = false;
 
         if (result == null) {
             return;
         }
 
         try {
-            JSONObject jsonObject = new JSONObject(result.toString());
+            JSONObject jsonObject = new JSONObject(result);
 
-            if (jsonObject.has(Channel.JSON_PARAM_ROOT) == false) {
+            if (!jsonObject.has(Channel.JSON_PARAM_ROOT)) {
                 return;
             }
 
@@ -272,7 +289,9 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
                     ArrayList<Item> data = channel.getItems();
 
                     setListView(data, mPage > 1);
-                    checkCanLoadExtra();
+
+                    mCanLoadExtra = checkCanLoadExtra();
+                    mResultAdapter.setLastPageLoaded(!checkCanLoadExtra());
                 } else {
 
                     // TODO: Handle when totalCount is invalid value.
@@ -304,32 +323,37 @@ public class NMainActivity extends AppCompatActivity implements GRESTURLConnecti
 
     private void setListView(ArrayList<Item> data, boolean isDataAdd) {
         ArrayList<Item> listData;
-        NewNBaseResultAdapter listAdapter = mSwipeRefreshLayout.getAdapter();
 
         if (isDataAdd) {
-            listData = listAdapter.getData();
+            listData = mResultAdapter.getData();
             listData.addAll(data);
         } else {
             listData = data;
         }
 
-        listAdapter.setData(listData);
-        mSwipeRefreshLayout.getListView().setAdapter(listAdapter);
+        mResultAdapter.setData(listData);
+        mSwipeRefreshLayout.getListView().setAdapter(mResultAdapter);
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
-    private void checkCanLoadExtra() {
-        mCanLoadExtra = NConstants.LIST_EXTRA_LOADING_PRE_COUNT * mPage < mTotalCount && mPage < NConstants.API_PAGE_LIMIT;
+    private boolean checkCanLoadExtra() {
+
+        // Limited result pages to 3
+        // because the API always returns 3 pages even totalCount of data is over 3 pages.
+        return NConstants.LIST_EXTRA_LOADING_PRE_COUNT * mPage < mTotalCount
+                && mPage < NConstants.API_PAGE_LIMIT;
     }
 
     private void setListViewsVisibility(boolean showSwipeLayout) {
         if (showSwipeLayout) {
-            if (mSearchLayout.getVisibility() == View.VISIBLE && mSwipeRefreshLayout.getVisibility() == View.GONE) {
+            if (mSearchLayout.getVisibility() == View.VISIBLE
+                    && mSwipeRefreshLayout.getVisibility() == View.GONE) {
                 mSearchLayout.setVisibility(View.GONE);
                 mSwipeRefreshLayout.setVisibility(View.VISIBLE);
             }
         } else {
-            if (mSwipeRefreshLayout.getVisibility() == View.VISIBLE && mSearchLayout.getVisibility() == View.GONE) {
+            if (mSwipeRefreshLayout.getVisibility() == View.VISIBLE
+                    && mSearchLayout.getVisibility() == View.GONE) {
                 setSearchListView();
                 mSearchLayout.setVisibility(View.VISIBLE);
                 mSwipeRefreshLayout.setVisibility(View.GONE);
