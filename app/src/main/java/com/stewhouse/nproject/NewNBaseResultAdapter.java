@@ -24,9 +24,15 @@ public class NewNBaseResultAdapter extends RecyclerView.Adapter<NewNBaseResultAd
 
     private String mSearchKeyword = null;
 
+    private boolean mIsLastPageLoaded = false;
+
     public void setData(ArrayList<Item> data) {
         mData = data;
         notifyDataSetChanged();
+    }
+
+    public void setLastPageLoaded(boolean isLastPageLoaded) {
+        mIsLastPageLoaded = isLastPageLoaded;
     }
 
     public ArrayList<Item> getData() {
@@ -80,6 +86,8 @@ public class NewNBaseResultAdapter extends RecyclerView.Adapter<NewNBaseResultAd
     @Override
     public int getItemCount() {
         if (mData == null) return 0;
+
+        if (mIsLastPageLoaded) return mData.size();
 
         return mData.size() + 1;
     }
