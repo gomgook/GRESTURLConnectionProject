@@ -191,13 +191,6 @@ public class NMainActivity extends AppCompatActivity
             }
         });
 
-        LayoutInflater inflater = getLayoutInflater();
-        View view = inflater.inflate(R.layout.view_listview_footer, null);
-
-        if (view != null) {
-            mSwipeRefreshLayout.setFooterLoadingView(view);
-        }
-
         mPage = 1;
     }
 
@@ -240,8 +233,6 @@ public class NMainActivity extends AppCompatActivity
     }
 
     private void loadData() {
-        mSwipeRefreshLayout.addLoadingFooter();
-
         GRESTURLConnection connection = new GRESTURLConnection();
         HashMap<String, String> params = new HashMap<>();
 
@@ -331,8 +322,11 @@ public class NMainActivity extends AppCompatActivity
             listData = data;
         }
 
+        if (!isDataAdd) {
+            mSwipeRefreshLayout.getListView().setAdapter(mResultAdapter);
+        }
+
         mResultAdapter.setData(listData);
-        mSwipeRefreshLayout.getListView().setAdapter(mResultAdapter);
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
