@@ -5,14 +5,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
-import com.stewhouse.nproject.NewNBaseResultAdapter;
+import com.stewhouse.nproject.NBaseResultAdapter;
 
 /**
  * Created by Gomguk on 2016-07-11.
  */
 public class GSwipeRefreshLayout extends SwipeRefreshLayout {
     private RecyclerView mListView = null;
-    private NewNBaseResultAdapter mListAdapter = null;
+    private NBaseResultAdapter mListAdapter = null;
 
     public GSwipeRefreshLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -26,7 +26,7 @@ public class GSwipeRefreshLayout extends SwipeRefreshLayout {
         mListView = listView;
     }
 
-    public void setAdapter(NewNBaseResultAdapter adapter) {
+    public void setAdapter(NBaseResultAdapter adapter) {
         mListAdapter = adapter;
         mListView.setAdapter(mListAdapter);
     }

@@ -1,10 +1,10 @@
 package com.stewhouse.nproject;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  * Created by Gomguk on 16. 7. 13..
  */
-public class NBaseSearchAdapter extends BaseAdapter {
+public class NBaseSearchAdapter extends RecyclerView.Adapter<NBaseSearchAdapter.SearchViewHolder> {
 
     private Context mContext = null;
     private ArrayList<String> mData = null;
@@ -28,45 +28,20 @@ public class NBaseSearchAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return mData.size();
+    public SearchViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_listview_keyword_cell, parent, false);
+
+        return new SearchViewHolder(view);
     }
 
     @Override
-    public Object getItem(int position) {
-        return mData.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    class ViewHolder {
-        TextView title_text = null;
-        ImageView btn_delete = null;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-
-        if (convertView == null) {
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.view_listview_keyword_cell, parent, false);
-            holder = new ViewHolder();
-            holder.title_text = convertView.findViewById(R.id.title_text);
-            holder.btn_delete = convertView.findViewById(R.id.btn_delete);
-
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
-        }
-
-        final String keyword = (String) getItem(position);
+    public void onBindViewHolder(SearchViewHolder holder, int position) {
+        final String keyword = mData.get(position);
 
         if (keyword != null) {
             holder.title_text.setText(keyword);
         }
+
         holder.btn_delete.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -77,7 +52,27 @@ public class NBaseSearchAdapter extends BaseAdapter {
                 setData(nsqLiteOpenHelper.getKeywords(nsqLiteOpenHelper.getReadableDatabase()));
             }
         });
+    }
 
-        return convertView;
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemCount() {
+        return mData.size();
+    }
+
+    public class SearchViewHolder extends RecyclerView.ViewHolder {
+        TextView title_text = null;
+        ImageView btn_delete = null;
+
+        public SearchViewHolder(View itemView) {
+            super(itemView);
+
+            title_text = itemView.findViewById(R.id.title_text);
+            btn_delete = itemView.findViewById(R.id.btn_delete);
+        }
     }
 }
