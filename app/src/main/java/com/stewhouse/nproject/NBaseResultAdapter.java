@@ -31,7 +31,7 @@ public class NBaseResultAdapter extends RecyclerView.Adapter<NBaseResultAdapter.
         notifyDataSetChanged();
     }
 
-    public void setLastPageLoaded(boolean isLastPageLoaded) {
+    void setLastPageLoaded(boolean isLastPageLoaded) {
         mIsLastPageLoaded = isLastPageLoaded;
     }
 
@@ -39,7 +39,7 @@ public class NBaseResultAdapter extends RecyclerView.Adapter<NBaseResultAdapter.
         return mData;
     }
 
-    public void setSearchKeyword(String searchKeyword) {
+    void setSearchKeyword(String searchKeyword) {
         mSearchKeyword = searchKeyword;
     }
 
@@ -101,8 +101,8 @@ public class NBaseResultAdapter extends RecyclerView.Adapter<NBaseResultAdapter.
         return VIEW_TYPE_ROW;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public ViewHolder(View itemView) {
+    class ViewHolder extends RecyclerView.ViewHolder {
+        ViewHolder(View itemView) {
             super(itemView);
         }
     }
@@ -111,7 +111,7 @@ public class NBaseResultAdapter extends RecyclerView.Adapter<NBaseResultAdapter.
         ViewGroup parentViewGroup = null;
         TextView title_text;
 
-        public ResultViewHolder(View itemView, ViewGroup parent) {
+        ResultViewHolder(View itemView, ViewGroup parent) {
             super(itemView);
 
             parentViewGroup = parent;
@@ -120,7 +120,7 @@ public class NBaseResultAdapter extends RecyclerView.Adapter<NBaseResultAdapter.
     }
 
     public class FooterViewHolder extends ViewHolder {
-        public FooterViewHolder(View itemView) {
+        FooterViewHolder(View itemView) {
             super(itemView);
         }
     }
