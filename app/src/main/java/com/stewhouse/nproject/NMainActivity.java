@@ -9,12 +9,10 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -46,10 +44,10 @@ public class NMainActivity extends AppCompatActivity
     private NSQLiteOpenHelper mSQLiteOpenHelper = null;
 
     private RelativeLayout mSearchLayout = null;
-    private ListView mSearchListView = null;
+    private RecyclerView mSearchListView = null;
     private GSwipeRefreshLayout mSwipeRefreshLayout = null;
 
-    private NewNBaseResultAdapter mResultAdapter = null;
+    private NBaseResultAdapter mResultAdapter = null;
 
     private int mPage = -1;
     private int mTotalCount = -1;
@@ -146,11 +144,10 @@ public class NMainActivity extends AppCompatActivity
         }
         mSearchListView = findViewById(R.id.view_search_list);
         if (mSearchListView != null) {
-            mSearchListView.setDivider(null);
             setSearchListView();
         }
 
-        mResultAdapter = new NewNBaseResultAdapter();
+        mResultAdapter = new NBaseResultAdapter();
 
         // Set SwipeRefreshLayout.
         mSwipeRefreshLayout = findViewById(R.id.layout_swiperefresh);
@@ -299,6 +296,8 @@ public class NMainActivity extends AppCompatActivity
     private void setSearchListView() {
         ArrayList<String> data = mSQLiteOpenHelper.getKeywords(mSQLiteOpenHelper.getReadableDatabase());
         NBaseSearchAdapter listAdapter;
+
+        mSearchListView.setLayoutManager(new LinearLayoutManager(this));
 
         if (data != null) {
             if (mSearchListView.getAdapter() == null) {

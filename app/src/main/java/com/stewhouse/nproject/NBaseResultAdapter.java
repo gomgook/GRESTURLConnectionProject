@@ -1,11 +1,10 @@
 package com.stewhouse.nproject;
 
-import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.stewhouse.nproject.model.Item;
@@ -14,21 +13,26 @@ import com.stewhouse.nproject.util.GUtil;
 import java.util.ArrayList;
 
 /**
- * Created by Gomguk on 16. 7. 11..
+ * Created by Alphys on 2018. 1. 16..
  */
-public class NBaseResultAdapter extends BaseAdapter {
-    private Context mContext = null;
+
+public class NBaseResultAdapter extends RecyclerView.Adapter<NBaseResultAdapter.ViewHolder> {
+    private static int VIEW_TYPE_ROW = 1;
+    private static int VIEW_TYPE_LOADING_FOOTER = 2;
+
     private ArrayList<Item> mData = null;
 
     private String mSearchKeyword = null;
 
-    public NBaseResultAdapter(Context context) {
-        mContext = context;
-    }
+    private boolean mIsLastPageLoaded = false;
 
     public void setData(ArrayList<Item> data) {
         mData = data;
         notifyDataSetChanged();
+    }
+
+    public void setLastPageLoaded(boolean isLastPageLoaded) {
+        mIsLastPageLoaded = isLastPageLoaded;
     }
 
     public ArrayList<Item> getData() {
@@ -40,48 +44,84 @@ public class NBaseResultAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return mData.size();
-    }
+    public NBaseResultAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view;
 
-    @Override
-    public Object getItem(int position) {
-        return mData.get(position);
-    }
+        if (viewType == VIEW_TYPE_LOADING_FOOTER) {
+            view = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.view_listview_footer, parent, false);
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    class ViewHolder {
-        TextView title_text = null;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-
-        if (convertView == null) {
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.view_listview_result_cell, parent, false);
-            holder = new ViewHolder();
-            holder.title_text = convertView.findViewById(R.id.title_text);
-
-            convertView.setTag(holder);
+            return new FooterViewHolder(view);
         } else {
-            holder = (ViewHolder) convertView.getTag();
+            view = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.view_listview_result_cell, parent, false);
+
+            return new ResultViewHolder(view, parent);
         }
+    }
 
-        Item item = (Item) getItem(position);
+    @Override
+    public void onBindViewHolder(NBaseResultAdapter.ViewHolder holder, int position) {
+        if (getItemViewType(position) == VIEW_TYPE_ROW) {
+            ResultViewHolder resultViewHolder = (ResultViewHolder) holder;
 
-        if (item != null) {
-            if (item.getTitle() != null) {
-                String htmlStr = item.getTitle();
-                htmlStr = htmlStr.replace(mSearchKeyword, "<font color=\"" + GUtil.getColor(mContext, R.color.view_listview_cell_title_highlight) + "\">" + mSearchKeyword + "</font>");
+            Item item = mData.get(position);
 
-                holder.title_text.setText(Html.fromHtml(htmlStr));
+            if (item != null) {
+                if (item.getTitle() != null) {
+                    String htmlStr = item.getTitle();
+                    htmlStr = htmlStr.replace(
+                            mSearchKeyword,
+                            "<font color=\"" + GUtil.getColor(resultViewHolder.parentViewGroup.getContext(),
+                                    R.color.view_listview_cell_title_highlight) + "\">" + mSearchKeyword + "</font>");
+
+                    resultViewHolder.title_text.setText(Html.fromHtml(htmlStr));
+                }
             }
         }
-        return convertView;
+    }
+
+    @Override
+    public int getItemCount() {
+        if (mData == null) return 0;
+
+        if (mIsLastPageLoaded) return mData.size();
+
+        return mData.size() + 1;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (mData != null && position == mData.size()) {
+            return VIEW_TYPE_LOADING_FOOTER;
+        }
+
+        return VIEW_TYPE_ROW;
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        public ViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    public class ResultViewHolder extends ViewHolder {
+        ViewGroup parentViewGroup = null;
+        TextView title_text;
+
+        public ResultViewHolder(View itemView, ViewGroup parent) {
+            super(itemView);
+
+            parentViewGroup = parent;
+            title_text = itemView.findViewById(R.id.title_text);
+        }
+    }
+
+    public class FooterViewHolder extends ViewHolder {
+        public FooterViewHolder(View itemView) {
+            super(itemView);
+        }
     }
 }
