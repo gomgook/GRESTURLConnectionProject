@@ -12,7 +12,6 @@ import com.stewhouse.nproject.NBaseResultAdapter;
  */
 public class GSwipeRefreshLayout extends SwipeRefreshLayout {
     private RecyclerView mListView = null;
-    private NBaseResultAdapter mListAdapter = null;
 
     public GSwipeRefreshLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -27,8 +26,7 @@ public class GSwipeRefreshLayout extends SwipeRefreshLayout {
     }
 
     public void setAdapter(NBaseResultAdapter adapter) {
-        mListAdapter = adapter;
-        mListView.setAdapter(mListAdapter);
+        mListView.setAdapter(adapter);
     }
 
     public void setLayoutManager(RecyclerView.LayoutManager layoutManager) {

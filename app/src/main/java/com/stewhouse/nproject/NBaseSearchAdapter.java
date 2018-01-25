@@ -18,7 +18,7 @@ public class NBaseSearchAdapter extends RecyclerView.Adapter<NBaseSearchAdapter.
     private Context mContext = null;
     private ArrayList<String> mData = null;
 
-    public NBaseSearchAdapter(Context context) {
+    NBaseSearchAdapter(Context context) {
         mContext = context;
     }
 
@@ -64,11 +64,11 @@ public class NBaseSearchAdapter extends RecyclerView.Adapter<NBaseSearchAdapter.
         return mData.size();
     }
 
-    public class SearchViewHolder extends RecyclerView.ViewHolder {
+    class SearchViewHolder extends RecyclerView.ViewHolder {
         TextView title_text = null;
         ImageView btn_delete = null;
 
-        public SearchViewHolder(View itemView) {
+        SearchViewHolder(View itemView) {
             super(itemView);
 
             title_text = itemView.findViewById(R.id.title_text);

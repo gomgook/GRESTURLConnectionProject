@@ -20,7 +20,7 @@ public class NSQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String QUERY_CREATE_TABLE = "create table keywords ( id integer primary key autoincrement, keyword varchar(255) not null, timestamp timestamp not null )";
 
-    public static NSQLiteOpenHelper getInstance(Context context) {
+    static NSQLiteOpenHelper getInstance(Context context) {
         if (mInstance == null) {
             return new NSQLiteOpenHelper(context);
         }
@@ -50,7 +50,7 @@ public class NSQLiteOpenHelper extends SQLiteOpenHelper {
     }
 
     // Queries.
-    public void insertKeyword(SQLiteDatabase db, String keyword) {
+    void insertKeyword(SQLiteDatabase db, String keyword) {
         String query = "insert into keywords ( keyword, timestamp ) values ( '" + keyword + "', current_timestamp)";
 
         // If the keyword data is duplicated, update these timestamp.
@@ -66,7 +66,7 @@ public class NSQLiteOpenHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
-    public ArrayList<String> getKeywords(SQLiteDatabase db) {
+    ArrayList<String> getKeywords(SQLiteDatabase db) {
         String query = "select * from keywords order by timestamp desc";
         ArrayList<String> row = new ArrayList<>();
 
@@ -79,7 +79,7 @@ public class NSQLiteOpenHelper extends SQLiteOpenHelper {
         return row;
     }
 
-    public int getKeywordsCount(SQLiteDatabase db) {
+    private int getKeywordsCount(SQLiteDatabase db) {
         String query = "select count(*) from keywords";
         int count = -1;
 
@@ -92,7 +92,7 @@ public class NSQLiteOpenHelper extends SQLiteOpenHelper {
         return count;
     }
 
-    public boolean isKeywordExists(SQLiteDatabase db, String keyword) {
+    private boolean isKeywordExists(SQLiteDatabase db, String keyword) {
         String query = "select count(*) from keywords where keyword = '" + keyword + "'";
 
         Cursor cursor = db.rawQuery(query, null);
@@ -108,25 +108,25 @@ public class NSQLiteOpenHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    public void deleteKeyword(SQLiteDatabase db, String keyword) {
+    void deleteKeyword(SQLiteDatabase db, String keyword) {
         String query = "delete from keywords where keyword = '" + keyword + "'";
 
         db.execSQL(query);
     }
 
-    public void deleteRecentKeyword(SQLiteDatabase db) {
+    private void deleteRecentKeyword(SQLiteDatabase db) {
         String query = "delete from keywords where timestamp in (select timestamp from keywords order by timestamp asc limit 1)";
 
         db.execSQL(query);
     }
 
-    public void deleteAllKeywords(SQLiteDatabase db) {
+    void deleteAllKeywords(SQLiteDatabase db) {
         String query = "delete from keywords";
 
         db.execSQL(query);
     }
 
-    public void updateKeyword(SQLiteDatabase db, String keyword) {
+    private void updateKeyword(SQLiteDatabase db, String keyword) {
         String query = "update keywords set timestamp = current_timestamp where keyword = '" + keyword + "'";
 
         db.execSQL(query);

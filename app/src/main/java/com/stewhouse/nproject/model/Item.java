@@ -7,17 +7,17 @@ import org.json.JSONObject;
  */
 public class Item {
 
-    public static final String JSON_PARAM_ROOT = "item";
+    static final String JSON_PARAM_ROOT = "item";
 
     private static final String JSON_PARAM_TITLE = "title";
 
-    public String mTitle = null;
+    private String mTitle = null;
 
     public String getTitle() {
         return mTitle;
     }
 
-    public static Item parse(JSONObject jsonObject) {
+    static Item parse(JSONObject jsonObject) {
         Item item = new Item();
 
         try {
