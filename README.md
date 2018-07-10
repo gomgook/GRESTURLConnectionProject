@@ -4,7 +4,7 @@ GRESTURLConnectionProject is a project searching book list. It saves the keyword
 
 GRESTURLConnectionProject is the test project to test a connection module which use REST API. Build.gradle which is dependent upon GRESTURLConnection module makes .lib file automatically and dependency of the file on app module to use this .lib file.
 
-GRESTURLConnectionProject also includes using ListView and Android DB managing. NBaseSearchAdapter and NBaseResultAdapter are the adapters of ListView in the main view. NSQLiteOpenHelper includes the functions which is related to DB managing.
+GRESTURLConnectionProject also includes using RecyclerView and Android DB managing. NBaseSearchAdapter and NBaseResultAdapter are the adapters of RecyclerView in the main view. NSQLiteOpenHelper includes the functions which is related to DB managing.
 
 # GRESTURLConnection
 
